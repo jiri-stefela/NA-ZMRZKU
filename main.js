@@ -424,47 +424,88 @@ adminPanel.innerHTML = `
       <h2 class="modal-title">Správa příchutí</h2>
       <p class="modal-subtitle" id="admin-user-email"></p>
     </div>
-    <form id="flavor-form" class="flavor-form">
-      <input type="hidden" id="flavor-edit-id" />
-      <div class="flavor-form-row">
-        <div class="form-field form-field--grow">
-          <label for="flavor-name">Název příchutě</label>
-          <input type="text" id="flavor-name" placeholder="Např. Pistáciová" required />
-        </div>
-        <div class="form-field">
-          <label for="flavor-type">Typ</label>
-          <select id="flavor-type">
-            <option value="tocena">Točená</option>
-            <option value="gelato">Gelato</option>
-            <option value="sorbet">Sorbet</option>
-            <option value="special">Specialita</option>
-          </select>
-        </div>
-        <div class="form-field">
-          <label for="flavor-location">Provozovna</label>
-          <select id="flavor-location">
-            <option value="kopecku">V Kopečku</option>
-            <option value="dvora">U Dvora</option>
-            <option value="special">Specialita</option>
-          </select>
-        </div>
-        <button type="submit" class="btn btn--primary btn--small" id="flavor-submit-btn">Přidat</button>
-      </div>
-    </form>
-    <div class="admin-flavors-list" id="admin-flavors-list"></div>
 
-    <div class="admin-divider"></div>
-    <h3 class="admin-section-title">Otevírací doba</h3>
-    <div class="admin-hours">
-      <div class="admin-hours-loc">
-        <label>V Kopečku</label>
-        <input type="text" id="hours-kopecku-input" placeholder="Po–Ne: 11:00–18:00" />
+    <!-- ADMIN TABS -->
+    <div class="admin-tabs">
+      <button class="admin-tab admin-tab--active" data-tab="quick">Rychlé přidání</button>
+      <button class="admin-tab" data-tab="custom">Vlastní příchuť</button>
+      <button class="admin-tab" data-tab="current">Aktuální příchutě</button>
+      <button class="admin-tab" data-tab="hours">Hodiny</button>
+    </div>
+
+    <!-- TAB: Quick Add -->
+    <div class="admin-tab-content admin-tab-content--active" id="tab-quick">
+      <div class="quick-add-controls">
+        <input type="text" id="quick-search" placeholder="Hledat příchuť…" class="quick-search-input" />
+        <div class="quick-add-row">
+          <div class="form-field">
+            <label for="quick-location">Provozovna</label>
+            <select id="quick-location">
+              <option value="kopecku">V Kopečku</option>
+              <option value="dvora">U Dvora</option>
+              <option value="special">Specialita</option>
+            </select>
+          </div>
+          <button type="button" class="btn btn--primary btn--small" id="quick-add-btn">Přidat vybrané <span id="quick-add-count"></span></button>
+        </div>
       </div>
-      <div class="admin-hours-loc">
-        <label>U Dvora</label>
-        <input type="text" id="hours-dvora-input" placeholder="Po–Ne: 13:00–18:00" />
+      <div class="quick-flavors-grid" id="quick-flavors-grid"></div>
+      <p class="quick-add-status" id="quick-add-status"></p>
+    </div>
+
+    <!-- TAB: Custom Add -->
+    <div class="admin-tab-content" id="tab-custom">
+      <form id="flavor-form" class="flavor-form">
+        <input type="hidden" id="flavor-edit-id" />
+        <div class="flavor-form-row">
+          <div class="form-field form-field--grow">
+            <label for="flavor-name">Název příchutě</label>
+            <input type="text" id="flavor-name" placeholder="Např. Pistáciová" required />
+          </div>
+          <div class="form-field">
+            <label for="flavor-type">Typ</label>
+            <select id="flavor-type">
+              <option value="tocena">Točená</option>
+              <option value="gelato">Gelato</option>
+              <option value="sorbet">Sorbet</option>
+              <option value="special">Specialita</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="flavor-location">Provozovna</label>
+            <select id="flavor-location">
+              <option value="kopecku">V Kopečku</option>
+              <option value="dvora">U Dvora</option>
+              <option value="special">Specialita</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn--primary btn--small" id="flavor-submit-btn">Přidat</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- TAB: Current Flavors -->
+    <div class="admin-tab-content" id="tab-current">
+      <div class="admin-current-actions">
+        <button type="button" class="btn btn--outline btn--small btn--danger" id="clear-all-flavors-btn">Smazat vše</button>
       </div>
-      <button type="button" class="btn btn--primary btn--small" id="save-hours-btn">Uložit hodiny</button>
+      <div class="admin-flavors-list" id="admin-flavors-list"></div>
+    </div>
+
+    <!-- TAB: Hours -->
+    <div class="admin-tab-content" id="tab-hours">
+      <h3 class="admin-section-title">Otevírací doba</h3>
+      <div class="admin-hours">
+        <div class="admin-hours-loc">
+          <label>V Kopečku</label>
+          <input type="text" id="hours-kopecku-input" placeholder="Po–Ne: 11:00–18:00" />
+        </div>
+        <div class="admin-hours-loc">
+          <label>U Dvora</label>
+          <input type="text" id="hours-dvora-input" placeholder="Po–Ne: 13:00–18:00" />
+        </div>
+        <button type="button" class="btn btn--primary btn--small" id="save-hours-btn">Uložit hodiny</button>
+      </div>
     </div>
 
     <div class="admin-actions">
@@ -473,6 +514,30 @@ adminPanel.innerHTML = `
   </div>
 `
 document.body.appendChild(adminPanel)
+
+// ============ ADMIN TABS ============
+document.querySelectorAll('.admin-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('admin-tab--active'))
+    document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('admin-tab-content--active'))
+    tab.classList.add('admin-tab--active')
+    document.getElementById('tab-' + tab.dataset.tab).classList.add('admin-tab-content--active')
+    if (tab.dataset.tab === 'quick') renderQuickAddPanel()
+  })
+})
+
+// Quick add listeners
+document.getElementById('quick-search').addEventListener('input', renderQuickAddPanel)
+document.getElementById('quick-add-btn').addEventListener('click', quickAddFlavors)
+
+// Clear all flavors
+let allFlavorDocs = []
+document.getElementById('clear-all-flavors-btn').addEventListener('click', async () => {
+  if (!confirm('Opravdu smazat VŠECHNY příchutě? Tato akce je nevratná.')) return
+  for (const d of allFlavorDocs) {
+    await deleteDoc(doc(db, 'flavors', d.id))
+  }
+})
 
 // ============ AUTH LOGIC ============
 const loginBtn = document.getElementById('admin-login-btn')
@@ -494,6 +559,7 @@ function closeModal(id) {
 loginBtn.addEventListener('click', () => {
   if (currentUser) {
     openModal('admin-modal')
+    renderQuickAddPanel()
   } else {
     openModal('login-modal')
   }
@@ -555,6 +621,161 @@ const flavorsSpecials = document.getElementById('flavors-specials')
 
 const typeLabels = { tocena: 'Točená', gelato: 'Gelato', sorbet: 'Sorbet', special: 'Specialita' }
 const typeColors = { tocena: '#E03B3B', gelato: '#e87942', sorbet: '#f59e0b', special: '#8b5cf6' }
+
+// ============ PREDEFINED FLAVORS ============
+const PREDEFINED_FLAVORS = [
+  // GELATO
+  { name: 'Smetanový základ', type: 'gelato' },
+  { name: 'Belgická čokoláda 70%', type: 'gelato' },
+  { name: 'Belgická čokoláda mléčná', type: 'gelato' },
+  { name: 'Jogurt', type: 'gelato' },
+  { name: 'Mascarpone', type: 'gelato' },
+  { name: 'Pistácie', type: 'gelato' },
+  { name: 'Lískový oříšek', type: 'gelato' },
+  { name: 'Arašíd', type: 'gelato' },
+  { name: 'Ricotta', type: 'gelato' },
+  { name: 'Kokos', type: 'gelato' },
+  { name: 'Slaný karamel', type: 'gelato' },
+  { name: 'Malaga', type: 'gelato' },
+  { name: 'Káva', type: 'gelato' },
+  { name: 'Tvaroh', type: 'gelato' },
+  { name: 'Citron', type: 'gelato' },
+  { name: 'Mango & Marakuja', type: 'gelato' },
+  { name: 'Jahoda', type: 'gelato' },
+  { name: 'Avokádo', type: 'gelato' },
+  { name: 'Malina', type: 'gelato' },
+  { name: 'Višeň', type: 'gelato' },
+  { name: 'Meruňka', type: 'gelato' },
+  { name: 'Hruška', type: 'gelato' },
+  { name: 'Pomeranč', type: 'gelato' },
+  { name: 'Černý rybíz', type: 'gelato' },
+  { name: 'Borůvka + Ostružina', type: 'gelato' },
+  { name: 'Borůvka', type: 'gelato' },
+  { name: 'Taková maková', type: 'gelato' },
+  { name: 'Malina + Jahoda', type: 'gelato' },
+  { name: 'Lotus', type: 'gelato' },
+  { name: 'Švestka', type: 'gelato' },
+  { name: 'Lesní směs', type: 'gelato' },
+  { name: 'Skořicová', type: 'gelato' },
+  { name: 'Smetanová jahoda', type: 'gelato' },
+  { name: 'Mandle', type: 'gelato' },
+  { name: 'Oreo', type: 'gelato' },
+  { name: 'Kouzelný šmoula', type: 'gelato' },
+  { name: 'Kokos vegan', type: 'gelato' },
+  { name: 'Konopné semínko', type: 'gelato' },
+  { name: 'Bílá čokoláda s levandulí', type: 'gelato' },
+  { name: 'Jogurt se zázvorem', type: 'gelato' },
+  { name: 'Jogurt s borůvkou', type: 'gelato' },
+  { name: 'Jogurt s malinou', type: 'gelato' },
+  { name: 'Stracciatella', type: 'gelato' },
+  { name: 'Duo Stracciatella', type: 'gelato' },
+  { name: 'Dračí ovoce', type: 'gelato' },
+  { name: 'Mák s višní', type: 'gelato' },
+  { name: 'Smetanová borůvka', type: 'gelato' },
+  { name: 'Grep se šampaňským', type: 'gelato' },
+  // TOČENÁ
+  { name: 'Černý rybíz zmrzlina', type: 'tocena' },
+  { name: 'Mango + Maracuja zmrzlina', type: 'tocena' },
+  { name: 'Jahodová zmrzlina', type: 'tocena' },
+  { name: 'Hrušková zmrzlina', type: 'tocena' },
+  { name: 'Banánová zmrzlina', type: 'tocena' },
+  { name: 'Meruňková zmrzlina', type: 'tocena' },
+  { name: 'Černá višeň zmrzlina', type: 'tocena' },
+  { name: 'Bezová zmrzlina', type: 'tocena' },
+  { name: 'Slaný karamel zmrzlina', type: 'tocena' },
+  { name: 'Malinová zmrzlina', type: 'tocena' },
+  { name: 'Citrónová zmrzlina', type: 'tocena' },
+  { name: 'Lesní směs zmrzlina', type: 'tocena' },
+  { name: 'Jahodová zmrzlina s mátou', type: 'tocena' },
+  { name: 'Růžový grep se šampaňským', type: 'tocena' },
+  { name: 'Červený rybíz zmrzlina', type: 'tocena' },
+  { name: 'Kiwi + Banán zmrzlina', type: 'tocena' },
+  { name: 'Jahoda + Banán zmrzlina', type: 'tocena' },
+  { name: 'Nutella zmrzlina', type: 'tocena' },
+  { name: 'Jahoda zmrzlina', type: 'tocena' },
+  { name: 'Čokoládová zmrzlina', type: 'tocena' },
+  { name: 'Vanilková zmrzlina', type: 'tocena' },
+]
+
+// Quick-add state
+let selectedQuickFlavors = new Set()
+
+function renderQuickAddPanel() {
+  const searchInput = document.getElementById('quick-search')
+  const searchVal = searchInput ? searchInput.value.toLowerCase() : ''
+  const container = document.getElementById('quick-flavors-grid')
+  if (!container) return
+
+  const gelatoFlavors = PREDEFINED_FLAVORS.filter(f => f.type === 'gelato' && f.name.toLowerCase().includes(searchVal))
+  const tocenaFlavors = PREDEFINED_FLAVORS.filter(f => f.type === 'tocena' && f.name.toLowerCase().includes(searchVal))
+
+  container.innerHTML = `
+    ${gelatoFlavors.length > 0 ? `<div class="quick-group-label">Gelato (${gelatoFlavors.length})</div>` : ''}
+    ${gelatoFlavors.map(f => `
+      <button type="button" class="quick-chip ${selectedQuickFlavors.has(f.name + '|' + f.type) ? 'quick-chip--selected' : ''}"
+        data-name="${f.name}" data-type="${f.type}"
+        style="--chip-color: ${typeColors[f.type]}">
+        ${f.name}
+      </button>
+    `).join('')}
+    ${tocenaFlavors.length > 0 ? `<div class="quick-group-label">Točená (${tocenaFlavors.length})</div>` : ''}
+    ${tocenaFlavors.map(f => `
+      <button type="button" class="quick-chip ${selectedQuickFlavors.has(f.name + '|' + f.type) ? 'quick-chip--selected' : ''}"
+        data-name="${f.name}" data-type="${f.type}"
+        style="--chip-color: ${typeColors[f.type]}">
+        ${f.name}
+      </button>
+    `).join('')}
+  `
+
+  container.querySelectorAll('.quick-chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.dataset.name + '|' + btn.dataset.type
+      if (selectedQuickFlavors.has(key)) {
+        selectedQuickFlavors.delete(key)
+        btn.classList.remove('quick-chip--selected')
+      } else {
+        selectedQuickFlavors.add(key)
+        btn.classList.add('quick-chip--selected')
+      }
+      updateQuickAddCount()
+    })
+  })
+}
+
+function updateQuickAddCount() {
+  const countEl = document.getElementById('quick-add-count')
+  if (countEl) {
+    countEl.textContent = selectedQuickFlavors.size > 0 ? `(${selectedQuickFlavors.size})` : ''
+  }
+}
+
+async function quickAddFlavors() {
+  const location = document.getElementById('quick-location').value
+  const statusEl = document.getElementById('quick-add-status')
+  if (selectedQuickFlavors.size === 0) {
+    statusEl.textContent = 'Vyberte alespoň jednu příchuť'
+    statusEl.className = 'quick-add-status quick-add-status--error'
+    setTimeout(() => { statusEl.textContent = ''; statusEl.className = 'quick-add-status' }, 2000)
+    return
+  }
+
+  statusEl.textContent = `Přidávám ${selectedQuickFlavors.size} příchutí...`
+  statusEl.className = 'quick-add-status'
+
+  for (const key of selectedQuickFlavors) {
+    const [name, type] = key.split('|')
+    await addDoc(collection(db, 'flavors'), { name, type, location, createdAt: new Date() })
+  }
+
+  statusEl.textContent = `Přidáno ${selectedQuickFlavors.size} příchutí!`
+  statusEl.className = 'quick-add-status quick-add-status--success'
+  selectedQuickFlavors.clear()
+  renderQuickAddPanel()
+  updateQuickAddCount()
+  setTimeout(() => { statusEl.textContent = ''; statusEl.className = 'quick-add-status' }, 2500)
+}
+
 flavorForm.addEventListener('submit', async (e) => {
   e.preventDefault()
   const name = flavorNameInput.value.trim()
@@ -606,6 +827,7 @@ function renderFlavorChips(flavors) {
 const flavorsQuery = query(collection(db, 'flavors'), orderBy('createdAt', 'desc'))
 
 onSnapshot(flavorsQuery, (snapshot) => {
+  allFlavorDocs = snapshot.docs.map(d => ({ id: d.id }))
   const all = snapshot.docs.map(d => ({ id: d.id, ...d.data() }))
 
   const kopecku = all.filter(f => f.location === 'kopecku')
