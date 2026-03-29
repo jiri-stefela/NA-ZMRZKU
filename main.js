@@ -401,6 +401,10 @@ document.querySelector('#app').innerHTML = `
         <img src="${BRAND.logo}" alt="NA&nbsp;ZMRZKU" />
       </div>
       <p>&copy; ${new Date().getFullYear()} NA&nbsp;ZMRZKU — Poctivá zmrzlina z Hradce Králové</p>
+      <div class="footer-legal">
+        <p>Provozovatel: <strong>NJHB s.r.o.</strong> | IČ: 24652253 | Rybná 716/24, 110 00 Praha 1</p>
+        <p>Zapsána v OR vedeném Městským soudem v Praze, sp. zn. C 444518</p>
+      </div>
       <p class="footer-partner">IT partner: <a href="https://www.datahold.cz" target="_blank" rel="noopener noreferrer">DATAHOLD s.r.o.</a></p>
       <button class="footer-admin-btn" id="admin-login-btn">Správa</button>
     </div>
@@ -987,6 +991,26 @@ if (storySection) {
     `
     storySection.appendChild(dot)
   }
+}
+
+// ============ COOKIE BANNER ============
+const cookieDismissed = localStorage.getItem('cookie-ok')
+if (!cookieDismissed) {
+  const cookieBanner = document.createElement('div')
+  cookieBanner.className = 'cookie-banner'
+  cookieBanner.innerHTML = `
+    <div class="cookie-inner">
+      <p class="cookie-text">Tento web používá pouze technické cookies nezbytné pro jeho fungování. Žádná data o vás neshromažďujeme ani nesledujeme.</p>
+      <button class="cookie-btn" id="cookie-ok">Rozumím</button>
+    </div>
+  `
+  document.body.appendChild(cookieBanner)
+  requestAnimationFrame(() => cookieBanner.classList.add('cookie-banner--visible'))
+  document.getElementById('cookie-ok').addEventListener('click', () => {
+    localStorage.setItem('cookie-ok', '1')
+    cookieBanner.classList.remove('cookie-banner--visible')
+    setTimeout(() => cookieBanner.remove(), 400)
+  })
 }
 
 // Intersection Observer
