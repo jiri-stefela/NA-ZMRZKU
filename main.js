@@ -39,7 +39,7 @@ loader.innerHTML = `
   <div class="loader-content">
     <div class="loader-logo-wrap">
       <div class="loader-logo-ring"></div>
-      <img src="${BRAND.logo}" alt="NA ZMRZKU" class="loader-logo" />
+      <img src="${BRAND.logo}" alt="NA&nbsp;ZMRZKU" class="loader-logo" />
     </div>
     <div class="loader-dots">
       <span class="loader-dot"></span>
@@ -66,9 +66,9 @@ document.querySelector('#app').innerHTML = `
     </div>
     <div class="hero-content">
       <div class="hero-logo-circle">
-        <img src="${BRAND.logo}" alt="NA ZMRZKU logo" />
+        <img src="${BRAND.logo}" alt="NA&nbsp;ZMRZKU logo" />
       </div>
-      <h1>NA ZMRZKU</h1>
+      <h1>NA&nbsp;ZMRZKU</h1>
       <p class="hero-tagline">Když na zmrzku, tak Na zmrzku</p>
       <p class="hero-location">${svg.pin} Hradec Králové</p>
       <div class="hero-buttons">
@@ -92,7 +92,7 @@ document.querySelector('#app').innerHTML = `
         <div class="loc-card">
           <div class="loc-card-icon">${svg.cone}</div>
           <div class="loc-card-head">
-            <h3 class="loc-card-name">${svg.pin} NA ZMRZKU V Kopečku</h3>
+            <h3 class="loc-card-name">${svg.pin} NA&nbsp;ZMRZKU V Kopečku</h3>
             <span class="loc-card-badge">2 točené + 4 gelata</span>
           </div>
           <div class="loc-card-info">
@@ -116,7 +116,7 @@ document.querySelector('#app').innerHTML = `
         <div class="loc-card">
           <div class="loc-card-icon">${svg.cone}</div>
           <div class="loc-card-head">
-            <h3 class="loc-card-name">${svg.pin} NA ZMRZKU U Dvora</h3>
+            <h3 class="loc-card-name">${svg.pin} NA&nbsp;ZMRZKU U Dvora</h3>
             <span class="loc-card-badge">2 točené</span>
           </div>
           <div class="loc-card-info">
@@ -175,7 +175,7 @@ document.querySelector('#app').innerHTML = `
         <h2 class="intro-heading">Zmrzku žereme.</h2>
         <p class="intro-sub">Nebo spíš milujeme...</p>
         <p class="intro-text">
-          Zmrzlinu, kterou vyrábíme s láskou a péčí od roku 2016. Každý kornoutek NA ZMRZKU
+          Zmrzlinu, kterou vyrábíme s láskou a péčí od roku 2016. Každý kornoutek NA&nbsp;ZMRZKU
           je poctivá domácí zmrzlina, která vám přinese nejen osvěžení, ale i radost.
         </p>
       </div>
@@ -183,7 +183,7 @@ document.querySelector('#app').innerHTML = `
       <!-- Fotka + text vedle sebe -->
       <div class="story-layout fade-in">
         <div class="story-photo">
-          <img src="${BRAND.photo}" alt="Zmrzlina NA ZMRZKU" />
+          <img src="${BRAND.photo}" alt="Zmrzlina NA&nbsp;ZMRZKU" />
         </div>
         <div class="story-body">
           <p>
@@ -216,7 +216,7 @@ document.querySelector('#app').innerHTML = `
           <div class="timeline-content">
             <span class="timeline-year">2016</span>
             <h3 class="timeline-title">Kde to všechno začalo</h3>
-            <p class="timeline-text">Jiří založil NA ZMRZKU s jedinou vizí — dělat poctivou zmrzlinu, která potěší. Z malého stánku v Hradci Králové se zrodil příběh, který trvá dodnes.</p>
+            <p class="timeline-text">Jiří založil NA&nbsp;ZMRZKU s jedinou vizí — dělat poctivou zmrzlinu, která potěší. Z malého stánku v Hradci Králové se zrodil příběh, který trvá dodnes.</p>
           </div>
         </div>
 
@@ -253,7 +253,7 @@ document.querySelector('#app').innerHTML = `
           <div class="timeline-content">
             <span class="timeline-year">2026+</span>
             <h3 class="timeline-title">Příběh pokračuje</h3>
-            <p class="timeline-text">Hradec má svoji zmrzlinárnu. S novou energií a odhodláním píšeme další kapitoly příběhu NA ZMRZKU. Přijďte je ochutnat.</p>
+            <p class="timeline-text">Hradec má svoji zmrzlinárnu. S novou energií a odhodláním píšeme další kapitoly příběhu NA&nbsp;ZMRZKU. Přijďte je ochutnat.</p>
           </div>
         </div>
       </div>
@@ -315,7 +315,7 @@ document.querySelector('#app').innerHTML = `
     <div class="section-inner">
       <div class="section-header fade-in">
         <h2 class="section-title">Mohli jste nás vidět</h2>
-        <p class="section-subtitle">NA ZMRZKU v médiích</p>
+        <p class="section-subtitle">NA&nbsp;ZMRZKU v médiích</p>
       </div>
       <div class="media-grid fade-in">
         <a href="https://cnn.iprima.cz/videa/velka-zmrzlinova-kradez-v-hradci-kralove" target="_blank" rel="noopener noreferrer" class="media-card media-card--link">
@@ -332,14 +332,14 @@ document.querySelector('#app').innerHTML = `
         </a>
         <a href="https://cnn.iprima.cz/videla/vyroba-zmrzliny" target="_blank" rel="noopener noreferrer" class="media-card media-card--link">
           <div class="media-icon">${svg.video}</div>
-          <h3 class="media-title">Za kulisami NA ZMRZKU</h3>
+          <h3 class="media-title">Za kulisami NA&nbsp;ZMRZKU</h3>
           <p class="media-desc">Jak vyrábíme zmrzlinu — reportáž Prima CNN.</p>
           <span class="media-source">Prima CNN</span>
         </a>
         <a href="https://hradecky.denik.cz/zpravy_region/zmrzlina-na-zmrzku-trebes-hradec-rozhovor-20250125.html" target="_blank" rel="noopener noreferrer" class="media-card media-card--link">
           <div class="media-icon">${svg.news}</div>
           <h3 class="media-title">Rozhovor v Hradeckém deníku</h3>
-          <p class="media-desc">Jak NA ZMRZKU přináší radost Hradečákům.</p>
+          <p class="media-desc">Jak NA&nbsp;ZMRZKU přináší radost Hradečákům.</p>
           <span class="media-source">Hradecký deník</span>
         </a>
       </div>
@@ -385,7 +385,7 @@ document.querySelector('#app').innerHTML = `
           ${svg.ig} @nazmrzku
         </a>
         <a href="https://www.facebook.com/nazmrzku/?locale=cs_CZ" target="_blank" rel="noopener noreferrer" class="social-link social-link--fb">
-          ${svg.fb} NA ZMRZKU
+          ${svg.fb} NA&nbsp;ZMRZKU
         </a>
         <a href="https://www.nazmrzku.cz/" target="_blank" rel="noopener noreferrer" class="social-link social-link--web">
           ${svg.globe} nazmrzku.cz
@@ -398,9 +398,9 @@ document.querySelector('#app').innerHTML = `
   <footer class="footer">
     <div class="footer-inner">
       <div class="footer-logo-circle">
-        <img src="${BRAND.logo}" alt="NA ZMRZKU" />
+        <img src="${BRAND.logo}" alt="NA&nbsp;ZMRZKU" />
       </div>
-      <p>&copy; ${new Date().getFullYear()} NA ZMRZKU — Poctivá zmrzlina z Hradce Králové</p>
+      <p>&copy; ${new Date().getFullYear()} NA&nbsp;ZMRZKU — Poctivá zmrzlina z Hradce Králové</p>
       <p class="footer-partner">IT partner: <a href="https://www.datahold.cz" target="_blank" rel="noopener noreferrer">DATAHOLD s.r.o.</a></p>
       <button class="footer-admin-btn" id="admin-login-btn">Správa</button>
     </div>
@@ -415,9 +415,9 @@ loginModal.innerHTML = `
   <div class="modal">
     <button class="modal-close" id="login-close">&times;</button>
     <div class="modal-header">
-      <img src="${BRAND.logo}" alt="NA ZMRZKU" class="modal-logo" />
+      <img src="${BRAND.logo}" alt="NA&nbsp;ZMRZKU" class="modal-logo" />
       <h2 class="modal-title">Přihlášení</h2>
-      <p class="modal-subtitle">Správa příchutí NA ZMRZKU</p>
+      <p class="modal-subtitle">Správa příchutí NA&nbsp;ZMRZKU</p>
     </div>
     <form id="login-form" class="login-form">
       <div class="form-field">
@@ -963,22 +963,27 @@ setInterval(() => {
   // Re-trigger by reading the snapshot again - it's already listening
 }, 60000)
 
-// Animované lentičky / sprinkles
-const sprinkleColors = ['#E03B3B', '#e87942', '#f59e0b', '#8b5cf6', '#fca5a5', '#93c5fd', '#34d399', '#f472b6']
+// Animované lentičky / sprinkles - barevné jako Smarties
+const sprinkleColors = [
+  '#E03B3B', '#e74c3c', '#e87942', '#f39c12', '#f59e0b',
+  '#27ae60', '#2ecc71', '#3498db', '#2980b9', '#8e44ad',
+  '#9b59b6', '#f472b6', '#e91e63', '#ff6b6b', '#feca57',
+  '#48dbfb', '#ff9ff3', '#54a0ff', '#5f27cd', '#01a3a4'
+]
 const storySection = document.querySelector('.story')
 if (storySection) {
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 40; i++) {
     const dot = document.createElement('span')
     dot.className = 'sprinkle'
-    const size = 3 + Math.random() * 5
+    const size = 6 + Math.random() * 10
     dot.style.cssText = `
       width: ${size}px;
-      height: ${size}px;
+      height: ${size * 0.85}px;
       background: ${sprinkleColors[Math.floor(Math.random() * sprinkleColors.length)]};
       left: ${Math.random() * 100}%;
       top: ${Math.random() * 100}%;
-      animation-duration: ${4 + Math.random() * 6}s;
-      animation-delay: ${Math.random() * 8}s;
+      animation-duration: ${5 + Math.random() * 8}s;
+      animation-delay: ${Math.random() * 10}s;
     `
     storySection.appendChild(dot)
   }
