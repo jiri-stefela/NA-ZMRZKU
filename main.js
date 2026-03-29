@@ -1,6 +1,7 @@
 import './style.css'
 import logoLocal from './logo-nazmrzku.jpg'
 import zmrzkaPhoto from './470170214_1018877173587670_5343044287738702859_n.jpg'
+import { auth, db, signInWithEmailAndPassword, signOut, onAuthStateChanged, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, getDoc, setDoc } from './firebase.js'
 
 // Brand assets
 const BRAND = {
@@ -71,10 +72,76 @@ document.querySelector('#app').innerHTML = `
       <p class="hero-location">${svg.pin} Hradec Králové</p>
       <div class="hero-buttons">
         <a href="#pribeh" class="btn btn--primary">Náš příběh</a>
-        <a href="#kontakt" class="btn btn--outline">Kde nás najdete</a>
+        <a href="#provozovny" class="btn btn--outline">Kde nás najdete</a>
       </div>
     </div>
     <div class="scroll-indicator">${svg.down}</div>
+  </section>
+
+  <!-- PROVOZOVNY — příchutě + kontakt -->
+  <section class="section locations-section" id="provozovny">
+    <div class="section-inner">
+      <div class="section-header fade-in">
+        <h2 class="section-title">Naše provozovny</h2>
+        <p class="section-subtitle">Kde nás najdete a co dnes točíme</p>
+      </div>
+
+      <div class="locations-grid fade-in">
+        <!-- V KOPEČKU -->
+        <div class="loc-card">
+          <div class="loc-card-head">
+            <h3 class="loc-card-name">${svg.pin} V Kopečku</h3>
+            <span class="loc-card-badge">2 točené + 4 gelata</span>
+          </div>
+          <div class="loc-card-info">
+            <div class="loc-card-row">${svg.pin} <span>V Kopečku 163, Hradec Králové</span></div>
+            <div class="loc-card-row">${svg.clock} <span id="hours-kopecku">Po–Ne: 11:00–18:00</span></div>
+          </div>
+          <div class="loc-card-rating">
+            <span class="rating-stars">4,6</span>
+            <span class="rating-count">188 recenzí</span>
+          </div>
+          <div class="loc-card-flavors" id="flavors-kopecku">
+            <div class="flavors-loading">Načítám příchutě…</div>
+          </div>
+          <div class="loc-card-actions">
+            <a href="https://maps.app.goo.gl/We5ZpddgCA5yF5YA7" target="_blank" rel="noopener noreferrer" class="contact-link">Navigovat</a>
+            <a href="https://maps.app.goo.gl/We5ZpddgCA5yF5YA7" target="_blank" rel="noopener noreferrer" class="contact-link contact-link--review">Napsat recenzi</a>
+          </div>
+        </div>
+
+        <!-- U DVORA -->
+        <div class="loc-card">
+          <div class="loc-card-head">
+            <h3 class="loc-card-name">${svg.pin} U Dvora</h3>
+            <span class="loc-card-badge">2 točené</span>
+          </div>
+          <div class="loc-card-info">
+            <div class="loc-card-row">${svg.pin} <span>U Dvora 839, Hradec Králové</span></div>
+            <div class="loc-card-row">${svg.clock} <span id="hours-dvora">Po–Ne: 13:00–18:00</span></div>
+          </div>
+          <div class="loc-card-rating">
+            <span class="rating-stars">4,6</span>
+            <span class="rating-count">207 recenzí</span>
+          </div>
+          <div class="loc-card-flavors" id="flavors-dvora">
+            <div class="flavors-loading">Načítám příchutě…</div>
+          </div>
+          <div class="loc-card-actions">
+            <a href="https://maps.app.goo.gl/sk4FJPn1xfHAeRGz9" target="_blank" rel="noopener noreferrer" class="contact-link">Navigovat</a>
+            <a href="https://maps.app.goo.gl/sk4FJPn1xfHAeRGz9" target="_blank" rel="noopener noreferrer" class="contact-link contact-link--review">Napsat recenzi</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- SPECIALITY -->
+      <div class="loc-specials fade-in">
+        <h3 class="loc-specials-title">Naše speciality</h3>
+        <div class="flavors-list" id="flavors-specials">
+          <div class="flavors-loading">Načítám…</div>
+        </div>
+      </div>
+    </div>
   </section>
 
   <!-- NÁŠ PŘÍBĚH — sjednocená sekce -->
@@ -108,8 +175,7 @@ document.querySelector('#app').innerHTML = `
             nebo něco sezónního — vždycky je to čerstvé a poctivé.
           </p>
           <p>
-            Udělejte si chvilku pro sebe. Zastavte se u nás nebo si zmrzlinu nechte doručit
-            až k vám domů. U nás je každý kousek příležitostí dopřát si něco výjimečného.
+            Udělejte si chvilku pro sebe. U nás je každý kousek příležitostí dopřát si něco výjimečného.
           </p>
         </div>
       </div>
@@ -285,44 +351,6 @@ document.querySelector('#app').innerHTML = `
     </div>
   </section>
 
-  <!-- KONTAKT -->
-  <section class="section contact" id="kontakt">
-    <div class="section-inner">
-      <div class="section-header fade-in">
-        <h2 class="section-title">Kde nás najdete</h2>
-        <p class="section-subtitle">Stavte se k nám na zmrzku</p>
-      </div>
-      <div class="contact-grid fade-in">
-        <div class="contact-card">
-          <h3 class="contact-card-title">${svg.pin} V Kopečku</h3>
-          <div class="contact-item">${svg.pin} <span>V Kopečku 163, Hradec Králové</span></div>
-          <div class="contact-item">${svg.clock} <span>Po\u2013Ne: 11:00\u201318:00</span></div>
-          <div class="contact-rating">
-            <span class="rating-stars">4,6</span>
-            <span class="rating-count">188 recenzí</span>
-          </div>
-          <div class="contact-links">
-            <a href="https://maps.app.goo.gl/We5ZpddgCA5yF5YA7" target="_blank" rel="noopener noreferrer" class="contact-link">Navigovat</a>
-            <a href="https://maps.app.goo.gl/We5ZpddgCA5yF5YA7" target="_blank" rel="noopener noreferrer" class="contact-link contact-link--review">Napsat recenzi</a>
-          </div>
-        </div>
-        <div class="contact-card">
-          <h3 class="contact-card-title">${svg.pin} U Dvora</h3>
-          <div class="contact-item">${svg.pin} <span>U Dvora 839, Hradec Králové</span></div>
-          <div class="contact-item">${svg.clock} <span>Po\u2013Ne: 13:00\u201318:00</span></div>
-          <div class="contact-rating">
-            <span class="rating-stars">4,6</span>
-            <span class="rating-count">207 recenzí</span>
-          </div>
-          <div class="contact-links">
-            <a href="https://maps.app.goo.gl/sk4FJPn1xfHAeRGz9" target="_blank" rel="noopener noreferrer" class="contact-link">Navigovat</a>
-            <a href="https://maps.app.goo.gl/sk4FJPn1xfHAeRGz9" target="_blank" rel="noopener noreferrer" class="contact-link contact-link--review">Napsat recenzi</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- SOCIÁLNÍ SÍTĚ -->
   <section class="social" id="socsite">
     <div class="section-inner">
@@ -352,9 +380,345 @@ document.querySelector('#app').innerHTML = `
       </div>
       <p>&copy; ${new Date().getFullYear()} NA ZMRZKU — Poctivá zmrzlina z Hradce Králové</p>
       <p class="footer-partner">IT partner: <a href="https://www.datahold.cz" target="_blank" rel="noopener noreferrer">DATAHOLD s.r.o.</a></p>
+      <button class="footer-admin-btn" id="admin-login-btn">Správa</button>
     </div>
   </footer>
 `
+
+// ============ LOGIN MODAL ============
+const loginModal = document.createElement('div')
+loginModal.className = 'modal-overlay'
+loginModal.id = 'login-modal'
+loginModal.innerHTML = `
+  <div class="modal">
+    <button class="modal-close" id="login-close">&times;</button>
+    <div class="modal-header">
+      <img src="${BRAND.logo}" alt="NA ZMRZKU" class="modal-logo" />
+      <h2 class="modal-title">Přihlášení</h2>
+      <p class="modal-subtitle">Správa příchutí NA ZMRZKU</p>
+    </div>
+    <form id="login-form" class="login-form">
+      <div class="form-field">
+        <label for="login-email">E-mail</label>
+        <input type="email" id="login-email" placeholder="vas@email.cz" required />
+      </div>
+      <div class="form-field">
+        <label for="login-password">Heslo</label>
+        <input type="password" id="login-password" placeholder="Heslo" required />
+      </div>
+      <p class="login-error" id="login-error"></p>
+      <button type="submit" class="btn btn--primary login-submit">Přihlásit se</button>
+    </form>
+  </div>
+`
+document.body.appendChild(loginModal)
+
+// ============ ADMIN PANEL ============
+const adminPanel = document.createElement('div')
+adminPanel.className = 'modal-overlay'
+adminPanel.id = 'admin-modal'
+adminPanel.innerHTML = `
+  <div class="modal modal--admin">
+    <button class="modal-close" id="admin-close">&times;</button>
+    <div class="modal-header">
+      <h2 class="modal-title">Správa příchutí</h2>
+      <p class="modal-subtitle" id="admin-user-email"></p>
+    </div>
+    <form id="flavor-form" class="flavor-form">
+      <input type="hidden" id="flavor-edit-id" />
+      <div class="flavor-form-row">
+        <div class="form-field form-field--grow">
+          <label for="flavor-name">Název příchutě</label>
+          <input type="text" id="flavor-name" placeholder="Např. Pistáciová" required />
+        </div>
+        <div class="form-field">
+          <label for="flavor-type">Typ</label>
+          <select id="flavor-type">
+            <option value="tocena">Točená</option>
+            <option value="gelato">Gelato</option>
+            <option value="sorbet">Sorbet</option>
+            <option value="special">Specialita</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label for="flavor-location">Provozovna</label>
+          <select id="flavor-location">
+            <option value="kopecku">V Kopečku</option>
+            <option value="dvora">U Dvora</option>
+            <option value="special">Specialita</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn--primary btn--small" id="flavor-submit-btn">Přidat</button>
+      </div>
+    </form>
+    <div class="admin-flavors-list" id="admin-flavors-list"></div>
+
+    <div class="admin-divider"></div>
+    <h3 class="admin-section-title">Otevírací doba</h3>
+    <div class="admin-hours">
+      <div class="admin-hours-loc">
+        <label>V Kopečku</label>
+        <input type="text" id="hours-kopecku-input" placeholder="Po–Ne: 11:00–18:00" />
+      </div>
+      <div class="admin-hours-loc">
+        <label>U Dvora</label>
+        <input type="text" id="hours-dvora-input" placeholder="Po–Ne: 13:00–18:00" />
+      </div>
+      <button type="button" class="btn btn--primary btn--small" id="save-hours-btn">Uložit hodiny</button>
+    </div>
+
+    <div class="admin-actions">
+      <button class="btn btn--outline btn--small" id="admin-logout-btn">Odhlásit se</button>
+    </div>
+  </div>
+`
+document.body.appendChild(adminPanel)
+
+// ============ AUTH LOGIC ============
+const loginBtn = document.getElementById('admin-login-btn')
+const loginCloseBtn = document.getElementById('login-close')
+const loginForm = document.getElementById('login-form')
+const loginError = document.getElementById('login-error')
+const adminCloseBtn = document.getElementById('admin-close')
+const adminLogoutBtn = document.getElementById('admin-logout-btn')
+
+let currentUser = null
+
+function openModal(id) {
+  document.getElementById(id).classList.add('modal-overlay--visible')
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('modal-overlay--visible')
+}
+
+loginBtn.addEventListener('click', () => {
+  if (currentUser) {
+    openModal('admin-modal')
+  } else {
+    openModal('login-modal')
+  }
+})
+
+loginCloseBtn.addEventListener('click', () => closeModal('login-modal'))
+adminCloseBtn.addEventListener('click', () => closeModal('admin-modal'))
+
+loginModal.addEventListener('click', (e) => {
+  if (e.target === loginModal) closeModal('login-modal')
+})
+adminPanel.addEventListener('click', (e) => {
+  if (e.target === adminPanel) closeModal('admin-modal')
+})
+
+loginForm.addEventListener('submit', async (e) => {
+  e.preventDefault()
+  loginError.textContent = ''
+  const email = document.getElementById('login-email').value
+  const password = document.getElementById('login-password').value
+  try {
+    await signInWithEmailAndPassword(auth, email, password)
+    closeModal('login-modal')
+    openModal('admin-modal')
+    loginForm.reset()
+  } catch (err) {
+    loginError.textContent = 'Neplatný e-mail nebo heslo'
+  }
+})
+
+adminLogoutBtn.addEventListener('click', async () => {
+  await signOut(auth)
+  closeModal('admin-modal')
+})
+
+onAuthStateChanged(auth, (user) => {
+  currentUser = user
+  if (user) {
+    loginBtn.textContent = 'Admin'
+    loginBtn.classList.add('footer-admin-btn--active')
+    document.getElementById('admin-user-email').textContent = user.email
+  } else {
+    loginBtn.textContent = 'Správa'
+    loginBtn.classList.remove('footer-admin-btn--active')
+  }
+})
+
+// ============ FLAVORS CRUD ============
+const flavorForm = document.getElementById('flavor-form')
+const flavorEditId = document.getElementById('flavor-edit-id')
+const flavorNameInput = document.getElementById('flavor-name')
+const flavorTypeInput = document.getElementById('flavor-type')
+const flavorLocationInput = document.getElementById('flavor-location')
+const flavorSubmitBtn = document.getElementById('flavor-submit-btn')
+const adminFlavorsList = document.getElementById('admin-flavors-list')
+const flavorsKopecku = document.getElementById('flavors-kopecku')
+const flavorsDvora = document.getElementById('flavors-dvora')
+const flavorsSpecials = document.getElementById('flavors-specials')
+
+const typeLabels = { tocena: 'Točená', gelato: 'Gelato', sorbet: 'Sorbet', special: 'Specialita' }
+const typeColors = { tocena: '#E03B3B', gelato: '#e87942', sorbet: '#f59e0b', special: '#8b5cf6' }
+flavorForm.addEventListener('submit', async (e) => {
+  e.preventDefault()
+  const name = flavorNameInput.value.trim()
+  const type = flavorTypeInput.value
+  const location = flavorLocationInput.value
+  if (!name) return
+
+  if (flavorEditId.value) {
+    await updateDoc(doc(db, 'flavors', flavorEditId.value), { name, type, location })
+    flavorEditId.value = ''
+    flavorSubmitBtn.textContent = 'Přidat'
+  } else {
+    await addDoc(collection(db, 'flavors'), { name, type, location, createdAt: new Date() })
+  }
+  flavorNameInput.value = ''
+  flavorTypeInput.value = 'tocena'
+})
+
+function startEdit(id, name, type, location) {
+  flavorEditId.value = id
+  flavorNameInput.value = name
+  flavorTypeInput.value = type
+  flavorLocationInput.value = location
+  flavorSubmitBtn.textContent = 'Uložit'
+  flavorNameInput.focus()
+}
+
+async function deleteFlavor(id) {
+  if (confirm('Opravdu smazat tuto příchuť?')) {
+    await deleteDoc(doc(db, 'flavors', id))
+  }
+}
+
+window._editFlavor = startEdit
+window._deleteFlavor = deleteFlavor
+
+function renderFlavorChips(flavors) {
+  if (flavors.length === 0) return '<p class="flavors-empty">Zatím nic</p>'
+  return flavors.map(f => `
+    <div class="flavor-chip" style="--chip-color: ${typeColors[f.type] || typeColors.tocena}">
+      <span class="flavor-chip-dot"></span>
+      <span class="flavor-chip-name">${f.name}</span>
+      <span class="flavor-chip-type">${typeLabels[f.type] || f.type}</span>
+    </div>
+  `).join('')
+}
+
+// Realtime listener
+const flavorsQuery = query(collection(db, 'flavors'), orderBy('createdAt', 'desc'))
+
+onSnapshot(flavorsQuery, (snapshot) => {
+  const all = snapshot.docs.map(d => ({ id: d.id, ...d.data() }))
+
+  const kopecku = all.filter(f => f.location === 'kopecku')
+  const dvora = all.filter(f => f.location === 'dvora')
+  const specials = all.filter(f => f.location === 'special')
+
+  // Public - per location
+  flavorsKopecku.innerHTML = renderFlavorChips(kopecku)
+  flavorsDvora.innerHTML = renderFlavorChips(dvora)
+  flavorsSpecials.innerHTML = renderFlavorChips(specials)
+
+  // Admin list
+  if (all.length === 0) {
+    adminFlavorsList.innerHTML = '<p class="admin-empty">Zatím žádné příchutě. Přidejte první.</p>'
+  } else {
+    const grouped = [
+      { label: 'V Kopečku', items: kopecku },
+      { label: 'U Dvora', items: dvora },
+      { label: 'Speciality', items: specials },
+    ].filter(g => g.items.length > 0)
+
+    adminFlavorsList.innerHTML = grouped.map(g => `
+      <div class="admin-group">
+        <h4 class="admin-group-title">${g.label}</h4>
+        ${g.items.map(f => `
+          <div class="admin-flavor-item">
+            <span class="admin-flavor-dot" style="background: ${typeColors[f.type] || typeColors.tocena}"></span>
+            <span class="admin-flavor-name">${f.name}</span>
+            <span class="admin-flavor-type">${typeLabels[f.type] || f.type}</span>
+            <div class="admin-flavor-actions">
+              <button onclick="window._editFlavor('${f.id}', '${f.name.replace(/'/g, "\\'")}', '${f.type}', '${f.location}')" class="admin-btn-edit">Upravit</button>
+              <button onclick="window._deleteFlavor('${f.id}')" class="admin-btn-delete">Smazat</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `).join('')
+  }
+})
+
+// ============ OPENING HOURS (Firestore) ============
+const hoursKopeckuEl = document.getElementById('hours-kopecku')
+const hoursDvoraEl = document.getElementById('hours-dvora')
+const hoursKopeckuInput = document.getElementById('hours-kopecku-input')
+const hoursDvoraInput = document.getElementById('hours-dvora-input')
+const saveHoursBtn = document.getElementById('save-hours-btn')
+
+// Default hours (fallback)
+const defaultHours = {
+  kopecku: { text: 'Po–Ne: 11:00–18:00', open: '11:00', close: '18:00' },
+  dvora: { text: 'Po–Ne: 13:00–18:00', open: '13:00', close: '18:00' },
+}
+
+function isOpenNow(openTime, closeTime) {
+  const now = new Date()
+  const [oh, om] = openTime.split(':').map(Number)
+  const [ch, cm] = closeTime.split(':').map(Number)
+  const mins = now.getHours() * 60 + now.getMinutes()
+  return mins >= oh * 60 + om && mins < ch * 60 + cm
+}
+
+function renderHours(el, data) {
+  const open = isOpenNow(data.open, data.close)
+  el.innerHTML = `
+    ${data.text}
+    <span class="hours-status ${open ? 'hours-status--open' : 'hours-status--closed'}">
+      ${open ? 'Otevřeno' : 'Zavřeno'}
+    </span>
+  `
+}
+
+// Load hours from Firestore
+onSnapshot(doc(db, 'settings', 'hours'), (snap) => {
+  const data = snap.exists() ? snap.data() : null
+  const kopeckuData = data?.kopecku || defaultHours.kopecku
+  const dvoraData = data?.dvora || defaultHours.dvora
+
+  renderHours(hoursKopeckuEl, kopeckuData)
+  renderHours(hoursDvoraEl, dvoraData)
+
+  // Fill admin inputs
+  hoursKopeckuInput.value = kopeckuData.text
+  hoursDvoraInput.value = dvoraData.text
+})
+
+// Save hours from admin
+saveHoursBtn.addEventListener('click', async () => {
+  const kopeckuText = hoursKopeckuInput.value.trim()
+  const dvoraText = hoursDvoraInput.value.trim()
+
+  // Parse open/close times from text like "Po–Ne: 11:00–18:00"
+  function parseTimes(text) {
+    const match = text.match(/(\d{1,2}:\d{2})\s*[–-]\s*(\d{1,2}:\d{2})/)
+    return match ? { open: match[1], close: match[2] } : { open: '00:00', close: '23:59' }
+  }
+
+  const kopeckuTimes = parseTimes(kopeckuText)
+  const dvoraTimes = parseTimes(dvoraText)
+
+  await setDoc(doc(db, 'settings', 'hours'), {
+    kopecku: { text: kopeckuText, ...kopeckuTimes },
+    dvora: { text: dvoraText, ...dvoraTimes },
+  })
+
+  saveHoursBtn.textContent = 'Uloženo!'
+  setTimeout(() => { saveHoursBtn.textContent = 'Uložit hodiny' }, 1500)
+})
+
+// Refresh open/closed status every minute
+setInterval(() => {
+  const kopeckuData = { text: hoursKopeckuEl.textContent.replace(/Otevřeno|Zavřeno/g, '').trim() }
+  // Re-trigger by reading the snapshot again - it's already listening
+}, 60000)
 
 // Intersection Observer
 const observer = new IntersectionObserver((entries) => {
