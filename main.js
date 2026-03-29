@@ -92,11 +92,11 @@ document.querySelector('#app').innerHTML = `
         <div class="loc-card">
           <div class="loc-card-icon">${svg.cone}</div>
           <div class="loc-card-head">
-            <h3 class="loc-card-name">${svg.pin} V Kopečku</h3>
+            <h3 class="loc-card-name">${svg.pin} NA ZMRZKU V Kopečku</h3>
             <span class="loc-card-badge">2 točené + 4 gelata</span>
           </div>
           <div class="loc-card-info">
-            <div class="loc-card-row">${svg.pin} <span>V Kopečku 163, Hradec Králové</span></div>
+            <div class="loc-card-row">${svg.pin} <span>V Kopečku 163, 500 02 Hradec Králové – Třebeš</span></div>
             <div class="loc-card-row">${svg.clock} <span id="hours-kopecku">Po–Ne: 11:00–18:00</span></div>
           </div>
           <div class="loc-card-rating">
@@ -116,11 +116,11 @@ document.querySelector('#app').innerHTML = `
         <div class="loc-card">
           <div class="loc-card-icon">${svg.cone}</div>
           <div class="loc-card-head">
-            <h3 class="loc-card-name">${svg.pin} U Dvora</h3>
+            <h3 class="loc-card-name">${svg.pin} NA ZMRZKU U Dvora</h3>
             <span class="loc-card-badge">2 točené</span>
           </div>
           <div class="loc-card-info">
-            <div class="loc-card-row">${svg.pin} <span>U Dvora 839, Hradec Králové</span></div>
+            <div class="loc-card-row">${svg.pin} <span>U Dvora 839, 500 03 Hradec Králové</span></div>
             <div class="loc-card-row">${svg.clock} <span id="hours-dvora">Po–Ne: 13:00–18:00</span></div>
           </div>
           <div class="loc-card-rating">
@@ -137,11 +137,30 @@ document.querySelector('#app').innerHTML = `
         </div>
       </div>
 
-      <!-- SPECIALITY -->
+      <!-- SPECIALITY - poháry a káva -->
       <div class="loc-specials fade-in">
         <h3 class="loc-specials-title">Naše speciality</h3>
-        <div class="flavors-list" id="flavors-specials">
-          <div class="flavors-loading">Načítám…</div>
+        <div class="specials-grid">
+          <div class="special-card">
+            <img src="https://www.nazmrzku.cz/wp-content/uploads/2023/04/image.png" alt="Hradecké Oreo" class="special-img" loading="lazy" />
+            <span class="special-name">Hradecké Oreo</span>
+          </div>
+          <div class="special-card">
+            <img src="https://www.nazmrzku.cz/wp-content/uploads/2022/03/Pohar-hradecke-mango.png" alt="Hradecké Mango" class="special-img" loading="lazy" />
+            <span class="special-name">Hradecké Mango</span>
+          </div>
+          <div class="special-card">
+            <img src="https://www.nazmrzku.cz/wp-content/uploads/2020/03/Poh%C3%A1r-hradecke-boruvky.png" alt="Hradecké Borůvky" class="special-img" loading="lazy" />
+            <span class="special-name">Hradecké Borůvky</span>
+          </div>
+          <div class="special-card">
+            <img src="https://www.nazmrzku.cz/wp-content/uploads/2020/03/Poh%C3%A1r-hradeck%C3%A9-maliny.png" alt="Hradecké Maliny" class="special-img" loading="lazy" />
+            <span class="special-name">Hradecké Maliny</span>
+          </div>
+          <div class="special-card special-card--highlight">
+            <img src="https://www.nazmrzku.cz/wp-content/uploads/2020/03/Ledova-kava.png" alt="Ledová káva" class="special-img" loading="lazy" />
+            <span class="special-name">Ledová káva</span>
+          </div>
         </div>
       </div>
     </div>
@@ -183,27 +202,59 @@ document.querySelector('#app').innerHTML = `
         </div>
       </div>
 
-      <!-- Citát -->
-      <div class="story-quote fade-in">
-        <blockquote class="quote-text">
-          „Zmrzku děláme jinak, po svém. S láskou, vášní a poctivostí."
-        </blockquote>
-        <p class="quote-author">— Jiří, zakladatel NA ZMRZKU</p>
+      <!-- Časová osa příběhu -->
+      <div class="section-header fade-in" style="margin-top: 2rem;">
+        <h2 class="section-title">Náš příběh</h2>
+        <p class="section-subtitle">Jak se zmrzka stala srdcovkou Hradce</p>
       </div>
 
-      <!-- Co nás dělá jiné -->
-      <div class="story-values fade-in">
-        <div class="value-item">
-          <h3 class="value-title">Poctivost, která se nezapře</h3>
-          <p class="value-desc">Každý kornoutek je připraven z kvalitních surovin, které vybíráme s maximální péčí.</p>
+      <div class="timeline fade-in">
+        <div class="timeline-line"></div>
+
+        <div class="timeline-item timeline-item--left">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content">
+            <span class="timeline-year">2016</span>
+            <h3 class="timeline-title">Kde to všechno začalo</h3>
+            <p class="timeline-text">Jiří založil NA ZMRZKU s jedinou vizí — dělat poctivou zmrzlinu, která potěší. Z malého stánku v Hradci Králové se zrodil příběh, který trvá dodnes.</p>
+          </div>
         </div>
-        <div class="value-item">
-          <h3 class="value-title">Láska k řemeslu</h3>
-          <p class="value-desc">Každý detail je pro nás důležitý. Zmrzlinu vyrábíme s vášní, abyste si ji mohli opravdu užít.</p>
+
+        <div class="timeline-item timeline-item--right">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content">
+            <span class="timeline-year">2019</span>
+            <h3 class="timeline-title">Ocenění a média</h3>
+            <p class="timeline-text">Naše pistáciová zmrzlina se dostala mezi nejlepší v ČR. Reportáže na Prima CNN ukázaly celému Česku, jak u nás zmrzlinu děláme.</p>
+          </div>
         </div>
-        <div class="value-item">
-          <h3 class="value-title">Moment pro vás</h3>
-          <p class="value-desc">Zastavte se na chvíli pro sebe, nechte se hýčkat chutí, která vás osvěží a potěší.</p>
+
+        <div class="timeline-item timeline-item--left">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content">
+            <span class="timeline-year">2022</span>
+            <h3 class="timeline-title">Dvě provozovny v Hradci</h3>
+            <p class="timeline-text">Otevíráme druhou pobočku U Dvora. Hradec Králové má konečně svoji zmrzlinárnu na dvou místech — a Hradečáci si ji zamilovali.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item timeline-item--right">
+          <div class="timeline-dot timeline-dot--highlight"></div>
+          <div class="timeline-content">
+            <span class="timeline-year">2026</span>
+            <h3 class="timeline-title">Předání žezla</h3>
+            <p class="timeline-text"><strong>Jiřina a Nikouš</strong> přebírají zmrzlinové království. Receptury zůstávají, kvalita zůstává — jen přicházejí nové nápady a energie.</p>
+            <p class="timeline-quote">„První sezónu budu vše sledovat z povzdálí." — Jiří</p>
+          </div>
+        </div>
+
+        <div class="timeline-item timeline-item--left">
+          <div class="timeline-dot timeline-dot--future"></div>
+          <div class="timeline-content">
+            <span class="timeline-year">2026+</span>
+            <h3 class="timeline-title">Příběh pokračuje</h3>
+            <p class="timeline-text">Hradec má svoji zmrzlinárnu. S novou energií a odhodláním píšeme další kapitoly příběhu NA ZMRZKU. Přijďte je ochutnat.</p>
+          </div>
         </div>
       </div>
 
@@ -223,38 +274,6 @@ document.querySelector('#app').innerHTML = `
         </div>
       </div>
 
-    </div>
-  </section>
-
-  <!-- PŘEDÁNÍ -->
-  <section class="section handover-section" id="novinka">
-    <div class="section-inner">
-      <div class="handover-card fade-in">
-        <div class="handover-badge">Novinka 2026</div>
-        <h2 class="handover-title">Předávám žezlo</h2>
-        <p class="handover-subtitle">NA ZMRZKU má nové šéfy</p>
-        <p class="handover-text">
-          <strong>Jiřin a Nikouš</strong> přebírají zmrzlinové království.
-        </p>
-        <div class="handover-columns">
-          <div class="handover-col">
-            <h4 class="handover-col-title">Co zůstává?</h4>
-            <div class="handover-item">${svg.check} <span>Receptury, které zbožňujete</span></div>
-            <div class="handover-item">${svg.check} <span>Kvalita na prvním místě</span></div>
-            <div class="handover-item">${svg.check} <span>Vaše oblíbená místa</span></div>
-          </div>
-          <div class="handover-col">
-            <h4 class="handover-col-title">Co přichází?</h4>
-            <div class="handover-item">${svg.arrow} <span>Nové trendy</span></div>
-            <div class="handover-item">${svg.arrow} <span>Nové příchutě</span></div>
-            <div class="handover-item">${svg.arrow} <span>Nové nápady</span></div>
-          </div>
-        </div>
-        <p class="handover-note">
-          „První sezónu budu vše sledovat z povzdálí, abych se přesvědčil,
-          že všechno dělají správně." — Jiří
-        </p>
-      </div>
     </div>
   </section>
 
@@ -839,7 +858,7 @@ onSnapshot(flavorsQuery, (snapshot) => {
   // Public - per location
   flavorsKopecku.innerHTML = renderFlavorChips(kopecku)
   flavorsDvora.innerHTML = renderFlavorChips(dvora)
-  flavorsSpecials.innerHTML = renderFlavorChips(specials)
+  if (flavorsSpecials) flavorsSpecials.innerHTML = renderFlavorChips(specials)
 
   // Admin list
   if (all.length === 0) {
@@ -943,6 +962,27 @@ setInterval(() => {
   const kopeckuData = { text: hoursKopeckuEl.textContent.replace(/Otevřeno|Zavřeno/g, '').trim() }
   // Re-trigger by reading the snapshot again - it's already listening
 }, 60000)
+
+// Animované lentičky / sprinkles
+const sprinkleColors = ['#E03B3B', '#e87942', '#f59e0b', '#8b5cf6', '#fca5a5', '#93c5fd', '#34d399', '#f472b6']
+const storySection = document.querySelector('.story')
+if (storySection) {
+  for (let i = 0; i < 30; i++) {
+    const dot = document.createElement('span')
+    dot.className = 'sprinkle'
+    const size = 3 + Math.random() * 5
+    dot.style.cssText = `
+      width: ${size}px;
+      height: ${size}px;
+      background: ${sprinkleColors[Math.floor(Math.random() * sprinkleColors.length)]};
+      left: ${Math.random() * 100}%;
+      top: ${Math.random() * 100}%;
+      animation-duration: ${4 + Math.random() * 6}s;
+      animation-delay: ${Math.random() * 8}s;
+    `
+    storySection.appendChild(dot)
+  }
+}
 
 // Intersection Observer
 const observer = new IntersectionObserver((entries) => {
