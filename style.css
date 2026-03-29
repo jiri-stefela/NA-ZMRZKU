@@ -935,11 +935,57 @@ img { max-width: 100%; height: auto; }
 .loc-card {
   background: var(--bg);
   border-radius: var(--radius-l);
-  padding: 1.5rem;
+  padding: 2.75rem 1.5rem 1.5rem;
   border: 1px solid rgba(0,0,0,0.04);
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Stříška / markýza - pruhy */
+.loc-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 22px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--primary) 0, var(--primary) 20px,
+    var(--white) 20px, var(--white) 40px
+  );
+  border-radius: var(--radius-l) var(--radius-l) 0 0;
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(224, 59, 59, 0.15);
+}
+
+/* Stříška - vlnitý (scalloped) spodní okraj */
+.loc-card::after {
+  content: '';
+  position: absolute;
+  top: 22px;
+  left: 0;
+  right: 0;
+  height: 10px;
+  z-index: 2;
+  background-image:
+    radial-gradient(circle at 10px 0, var(--primary) 9px, transparent 9.5px),
+    radial-gradient(circle at 30px 0, var(--white) 9px, transparent 9.5px);
+  background-size: 40px 10px;
+  background-repeat: repeat-x;
+  background-position: 0 0;
+}
+
+.loc-card-icon {
+  position: absolute;
+  top: -4px;
+  right: 8px;
+  opacity: 0.12;
+  transform: scale(2.5);
+  pointer-events: none;
 }
 
 .loc-card-head {
@@ -1658,7 +1704,7 @@ img { max-width: 100%; height: auto; }
   .media-grid { grid-template-columns: 1fr; }
   .media-card { padding: 1.25rem; }
   .locations-grid { grid-template-columns: 1fr; }
-  .loc-card { padding: 1.1rem; }
+  .loc-card { padding: 2.5rem 1.1rem 1.1rem; }
   .loc-card-head { flex-direction: column; align-items: flex-start; gap: 0.3rem; }
   .flavor-form-row { flex-direction: column; }
   .flavor-form-row .btn--small { width: 100%; justify-content: center; }
