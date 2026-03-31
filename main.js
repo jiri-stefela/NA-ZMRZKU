@@ -243,7 +243,7 @@ document.querySelector('#app').innerHTML = `
           <div class="timeline-content">
             <span class="timeline-year">2026</span>
             <h3 class="timeline-title">Předání žezla</h3>
-            <p class="timeline-text"><strong>Jiřina a Nikouš</strong> přebírají zmrzlinové království. Receptury zůstávají, kvalita zůstává — jen přicházejí nové nápady a energie.</p>
+            <p class="timeline-text"><strong>Jiřin a Nikouš</strong> přebírají zmrzlinové království. Receptury zůstávají, kvalita zůstává — jen přicházejí nové nápady a energie.</p>
             <p class="timeline-quote">„První sezónu budu vše sledovat z povzdálí." — Jiří</p>
           </div>
         </div>
