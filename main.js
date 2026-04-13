@@ -106,6 +106,12 @@ document.querySelector('#app').innerHTML = `
           <div class="loc-card-flavors" id="flavors-kopecku">
             <div class="flavors-loading">Načítám příchutě…</div>
           </div>
+          <div class="loc-card-triste">
+            <h4 class="loc-card-triste-title">🧊 Ledové tříště</h4>
+            <div class="loc-card-triste-list" id="triste-kopecku">
+              <div class="flavors-loading">Načítám…</div>
+            </div>
+          </div>
           <div class="loc-card-actions">
             <a href="https://maps.app.goo.gl/We5ZpddgCA5yF5YA7" target="_blank" rel="noopener noreferrer" class="contact-link">Navigovat</a>
             <a href="https://maps.app.goo.gl/We5ZpddgCA5yF5YA7" target="_blank" rel="noopener noreferrer" class="contact-link contact-link--review">Napsat recenzi</a>
@@ -129,6 +135,12 @@ document.querySelector('#app').innerHTML = `
           </div>
           <div class="loc-card-flavors" id="flavors-dvora">
             <div class="flavors-loading">Načítám příchutě…</div>
+          </div>
+          <div class="loc-card-triste">
+            <h4 class="loc-card-triste-title">🧊 Ledové tříště</h4>
+            <div class="loc-card-triste-list" id="triste-dvora">
+              <div class="flavors-loading">Načítám…</div>
+            </div>
           </div>
           <div class="loc-card-actions">
             <a href="https://maps.app.goo.gl/sk4FJPn1xfHAeRGz9" target="_blank" rel="noopener noreferrer" class="contact-link">Navigovat</a>
@@ -466,6 +478,8 @@ adminPanel.innerHTML = `
               <option value="kopecku">V Kopečku</option>
               <option value="dvora">U Dvora</option>
               <option value="special">Specialita</option>
+              <option value="triste-kopecku">Tříště – V Kopečku</option>
+              <option value="triste-dvora">Tříště – U Dvora</option>
             </select>
           </div>
           <button type="button" class="btn btn--primary btn--small" id="quick-add-btn">Přidat vybrané <span id="quick-add-count"></span></button>
@@ -490,6 +504,7 @@ adminPanel.innerHTML = `
               <option value="tocena">Točená</option>
               <option value="gelato">Gelato</option>
               <option value="sorbet">Sorbet</option>
+              <option value="triste">Ledová tříšť</option>
               <option value="special">Specialita</option>
             </select>
           </div>
@@ -499,6 +514,8 @@ adminPanel.innerHTML = `
               <option value="kopecku">V Kopečku</option>
               <option value="dvora">U Dvora</option>
               <option value="special">Specialita</option>
+              <option value="triste-kopecku">Tříště – V Kopečku</option>
+              <option value="triste-dvora">Tříště – U Dvora</option>
             </select>
           </div>
           <button type="submit" class="btn btn--primary btn--small" id="flavor-submit-btn">Přidat</button>
@@ -641,8 +658,8 @@ const flavorsKopecku = document.getElementById('flavors-kopecku')
 const flavorsDvora = document.getElementById('flavors-dvora')
 const flavorsSpecials = document.getElementById('flavors-specials')
 
-const typeLabels = { tocena: 'Točená', gelato: 'Gelato', sorbet: 'Sorbet', special: 'Specialita' }
-const typeColors = { tocena: '#E03B3B', gelato: '#e87942', sorbet: '#f59e0b', special: '#8b5cf6' }
+const typeLabels = { tocena: 'Točená', gelato: 'Gelato', sorbet: 'Sorbet', special: 'Specialita', triste: 'Ledová tříšť' }
+const typeColors = { tocena: '#E03B3B', gelato: '#e87942', sorbet: '#f59e0b', special: '#8b5cf6', triste: '#3498db' }
 
 // ============ PREDEFINED FLAVORS ============
 const PREDEFINED_FLAVORS = [
@@ -716,6 +733,17 @@ const PREDEFINED_FLAVORS = [
   { name: 'Slaný karamel', type: 'tocena' },
   { name: 'Nutella', type: 'tocena' },
   { name: 'Grep & šampaňské', type: 'tocena' },
+  // LEDOVÉ TŘÍŠTĚ
+  { name: 'Jahodová tříšť', type: 'triste' },
+  { name: 'Malinová tříšť', type: 'triste' },
+  { name: 'Citrónová tříšť', type: 'triste' },
+  { name: 'Pomerančová tříšť', type: 'triste' },
+  { name: 'Mango tříšť', type: 'triste' },
+  { name: 'Borůvková tříšť', type: 'triste' },
+  { name: 'Višňová tříšť', type: 'triste' },
+  { name: 'Bezová tříšť', type: 'triste' },
+  { name: 'Kiwi tříšť', type: 'triste' },
+  { name: 'Grep tříšť', type: 'triste' },
 ]
 
 // Quick-add state
@@ -727,27 +755,26 @@ function renderQuickAddPanel() {
   const container = document.getElementById('quick-flavors-grid')
   if (!container) return
 
-  const gelatoFlavors = PREDEFINED_FLAVORS.filter(f => f.type === 'gelato' && f.name.toLowerCase().includes(searchVal))
-  const tocenaFlavors = PREDEFINED_FLAVORS.filter(f => f.type === 'tocena' && f.name.toLowerCase().includes(searchVal))
+  const groups = [
+    { key: 'gelato', label: 'Gelato' },
+    { key: 'tocena', label: 'Točená' },
+    { key: 'triste', label: 'Ledové tříště' },
+  ]
 
-  container.innerHTML = `
-    ${gelatoFlavors.length > 0 ? `<div class="quick-group-label">Gelato (${gelatoFlavors.length})</div>` : ''}
-    ${gelatoFlavors.map(f => `
-      <button type="button" class="quick-chip ${selectedQuickFlavors.has(f.name + '|' + f.type) ? 'quick-chip--selected' : ''}"
-        data-name="${f.name}" data-type="${f.type}"
-        style="--chip-color: ${typeColors[f.type]}">
-        ${f.name}
-      </button>
-    `).join('')}
-    ${tocenaFlavors.length > 0 ? `<div class="quick-group-label">Točená (${tocenaFlavors.length})</div>` : ''}
-    ${tocenaFlavors.map(f => `
-      <button type="button" class="quick-chip ${selectedQuickFlavors.has(f.name + '|' + f.type) ? 'quick-chip--selected' : ''}"
-        data-name="${f.name}" data-type="${f.type}"
-        style="--chip-color: ${typeColors[f.type]}">
-        ${f.name}
-      </button>
-    `).join('')}
-  `
+  container.innerHTML = groups.map(g => {
+    const items = PREDEFINED_FLAVORS.filter(f => f.type === g.key && f.name.toLowerCase().includes(searchVal))
+    if (items.length === 0) return ''
+    return `
+      <div class="quick-group-label">${g.label} (${items.length})</div>
+      ${items.map(f => `
+        <button type="button" class="quick-chip ${selectedQuickFlavors.has(f.name + '|' + f.type) ? 'quick-chip--selected' : ''}"
+          data-name="${f.name}" data-type="${f.type}"
+          style="--chip-color: ${typeColors[f.type]}">
+          ${f.name}
+        </button>
+      `).join('')}
+    `
+  }).join('')
 
   container.querySelectorAll('.quick-chip').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -835,17 +862,53 @@ window._deleteFlavor = deleteFlavor
 
 function renderFlavorChips(flavors) {
   if (flavors.length === 0) return '<p class="flavors-empty">Zatím nic</p>'
+  const groups = [
+    { key: 'gelato', label: 'Gelato', icon: '🍨' },
+    { key: 'tocena', label: 'Točená', icon: '🍦' },
+    { key: 'sorbet', label: 'Sorbet', icon: '🍧' },
+  ]
+  let html = ''
+  for (const g of groups) {
+    const items = flavors.filter(f => f.type === g.key)
+    if (items.length === 0) continue
+    html += `<div class="flavor-group">
+      <span class="flavor-group-label" style="--group-color: ${typeColors[g.key]}">${g.icon} ${g.label}</span>
+      <div class="flavor-group-chips">${items.map(f => `
+        <div class="flavor-chip" style="--chip-color: ${typeColors[f.type]}">
+          <span class="flavor-chip-dot"></span>
+          <span class="flavor-chip-name">${f.name}</span>
+        </div>`).join('')}
+      </div>
+    </div>`
+  }
+  // Ostatní typy (special apod.)
+  const other = flavors.filter(f => !['gelato', 'tocena', 'sorbet'].includes(f.type))
+  if (other.length > 0) {
+    html += other.map(f => `
+      <div class="flavor-chip" style="--chip-color: ${typeColors[f.type] || typeColors.tocena}">
+        <span class="flavor-chip-dot"></span>
+        <span class="flavor-chip-name">${f.name}</span>
+        <span class="flavor-chip-type">${typeLabels[f.type] || f.type}</span>
+      </div>`).join('')
+  }
+  return html
+}
+
+function renderTristeChips(flavors) {
+  if (flavors.length === 0) return '<p class="flavors-empty">Zatím nic</p>'
   return flavors.map(f => `
-    <div class="flavor-chip" style="--chip-color: ${typeColors[f.type] || typeColors.tocena}">
+    <div class="flavor-chip" style="--chip-color: ${typeColors.triste}">
       <span class="flavor-chip-dot"></span>
       <span class="flavor-chip-name">${f.name}</span>
-      <span class="flavor-chip-type">${typeLabels[f.type] || f.type}</span>
     </div>
   `).join('')
 }
 
 // Realtime listener
 const flavorsQuery = query(collection(db, 'flavors'), orderBy('createdAt', 'desc'))
+
+const tristeKopeckuEl = document.getElementById('triste-kopecku')
+const tristeDvoraEl = document.getElementById('triste-dvora')
 
 onSnapshot(flavorsQuery, (snapshot) => {
   allFlavorDocs = snapshot.docs.map(d => ({ id: d.id }))
@@ -854,11 +917,15 @@ onSnapshot(flavorsQuery, (snapshot) => {
   const kopecku = all.filter(f => f.location === 'kopecku')
   const dvora = all.filter(f => f.location === 'dvora')
   const specials = all.filter(f => f.location === 'special')
+  const tristeKopecku = all.filter(f => f.location === 'triste-kopecku')
+  const tristeDvora = all.filter(f => f.location === 'triste-dvora')
 
   // Public - per location
   flavorsKopecku.innerHTML = renderFlavorChips(kopecku)
   flavorsDvora.innerHTML = renderFlavorChips(dvora)
   if (flavorsSpecials) flavorsSpecials.innerHTML = renderFlavorChips(specials)
+  tristeKopeckuEl.innerHTML = renderTristeChips(tristeKopecku)
+  tristeDvoraEl.innerHTML = renderTristeChips(tristeDvora)
 
   // Admin list
   if (all.length === 0) {
@@ -867,6 +934,8 @@ onSnapshot(flavorsQuery, (snapshot) => {
     const grouped = [
       { label: 'V Kopečku', items: kopecku },
       { label: 'U Dvora', items: dvora },
+      { label: 'Tříště – V Kopečku', items: tristeKopecku },
+      { label: 'Tříště – U Dvora', items: tristeDvora },
       { label: 'Speciality', items: specials },
     ].filter(g => g.items.length > 0)
 

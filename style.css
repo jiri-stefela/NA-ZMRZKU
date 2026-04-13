@@ -1276,6 +1276,50 @@ img { max-width: 100%; height: auto; }
   opacity: 0.8;
 }
 
+/* Flavor groups (Gelato / Točená / Sorbet labels) */
+.flavor-group {
+  margin-bottom: 0.5rem;
+}
+
+.flavor-group-label {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--group-color, var(--text-light));
+  margin-bottom: 0.35rem;
+  padding: 0.2rem 0.6rem;
+  background: color-mix(in srgb, var(--group-color, var(--primary)) 8%, transparent);
+  border-radius: var(--radius-pill);
+}
+
+.flavor-group-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+/* Ledové tříště section on loc-card */
+.loc-card-triste {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed rgba(0,0,0,0.08);
+}
+
+.loc-card-triste-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #3498db;
+  margin-bottom: 0.4rem;
+}
+
+.loc-card-triste-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
 /* ======== MODAL ======== */
 .modal-overlay {
   position: fixed;
