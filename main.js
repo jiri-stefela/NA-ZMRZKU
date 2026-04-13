@@ -142,10 +142,6 @@ document.querySelector('#app').innerHTML = `
         <h3 class="loc-specials-title">Naše speciality</h3>
         <div class="specials-grid">
           <div class="special-card">
-            <img src="https://www.nazmrzku.cz/wp-content/uploads/2023/04/image.png" alt="Hradecké Oreo" class="special-img" loading="lazy" />
-            <span class="special-name">Hradecké Oreo</span>
-          </div>
-          <div class="special-card">
             <img src="https://www.nazmrzku.cz/wp-content/uploads/2022/03/Pohar-hradecke-mango.png" alt="Hradecké Mango" class="special-img" loading="lazy" />
             <span class="special-name">Hradecké Mango</span>
           </div>
