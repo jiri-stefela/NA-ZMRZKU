@@ -861,18 +861,21 @@ window._editFlavor = startEdit
 window._deleteFlavor = deleteFlavor
 
 function renderFlavorChips(flavors) {
-  if (flavors.length === 0) return '<p class="flavors-empty">Zatím nic</p>'
+  if (flavors.length === 0) return '<div class="flavors-empty-box"><span class="flavors-empty-icon">🍦</span><p class="flavors-empty">Příchutě brzy doplníme</p></div>'
   const groups = [
-    { key: 'gelato', label: 'Gelato', icon: '🍨' },
-    { key: 'tocena', label: 'Točená', icon: '🍦' },
-    { key: 'sorbet', label: 'Sorbet', icon: '🍧' },
+    { key: 'gelato', label: 'Gelato', icon: '🍨', count: 0 },
+    { key: 'tocena', label: 'Točená zmrzlina', icon: '🍦', count: 0 },
+    { key: 'sorbet', label: 'Sorbet', icon: '🍧', count: 0 },
   ]
   let html = ''
   for (const g of groups) {
     const items = flavors.filter(f => f.type === g.key)
     if (items.length === 0) continue
     html += `<div class="flavor-group">
-      <span class="flavor-group-label" style="--group-color: ${typeColors[g.key]}">${g.icon} ${g.label}</span>
+      <div class="flavor-group-header">
+        <span class="flavor-group-label" style="--group-color: ${typeColors[g.key]}">${g.icon} ${g.label}</span>
+        <span class="flavor-group-count">${items.length} příchut${items.length === 1 ? 'ě' : items.length < 5 ? 'ě' : 'í'}</span>
+      </div>
       <div class="flavor-group-chips">${items.map(f => `
         <div class="flavor-chip" style="--chip-color: ${typeColors[f.type]}">
           <span class="flavor-chip-dot"></span>
@@ -881,23 +884,18 @@ function renderFlavorChips(flavors) {
       </div>
     </div>`
   }
-  // Ostatní typy (special apod.)
-  const other = flavors.filter(f => !['gelato', 'tocena', 'sorbet'].includes(f.type))
-  if (other.length > 0) {
-    html += other.map(f => `
-      <div class="flavor-chip" style="--chip-color: ${typeColors[f.type] || typeColors.tocena}">
-        <span class="flavor-chip-dot"></span>
-        <span class="flavor-chip-name">${f.name}</span>
-        <span class="flavor-chip-type">${typeLabels[f.type] || f.type}</span>
-      </div>`).join('')
-  }
   return html
 }
 
-function renderTristeChips(flavors) {
-  if (flavors.length === 0) return '<p class="flavors-empty">Zatím nic</p>'
+function renderTristeChips(flavors, containerEl) {
+  const parentSection = containerEl?.closest('.loc-card-triste')
+  if (flavors.length === 0) {
+    if (parentSection) parentSection.style.display = 'none'
+    return ''
+  }
+  if (parentSection) parentSection.style.display = ''
   return flavors.map(f => `
-    <div class="flavor-chip" style="--chip-color: ${typeColors.triste}">
+    <div class="flavor-chip flavor-chip--triste" style="--chip-color: ${typeColors.triste}">
       <span class="flavor-chip-dot"></span>
       <span class="flavor-chip-name">${f.name}</span>
     </div>
@@ -924,8 +922,8 @@ onSnapshot(flavorsQuery, (snapshot) => {
   flavorsKopecku.innerHTML = renderFlavorChips(kopecku)
   flavorsDvora.innerHTML = renderFlavorChips(dvora)
   if (flavorsSpecials) flavorsSpecials.innerHTML = renderFlavorChips(specials)
-  tristeKopeckuEl.innerHTML = renderTristeChips(tristeKopecku)
-  tristeDvoraEl.innerHTML = renderTristeChips(tristeDvora)
+  tristeKopeckuEl.innerHTML = renderTristeChips(tristeKopecku, tristeKopeckuEl)
+  tristeDvoraEl.innerHTML = renderTristeChips(tristeDvora, tristeDvoraEl)
 
   // Admin list
   if (all.length === 0) {
