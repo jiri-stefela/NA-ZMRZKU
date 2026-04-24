@@ -1181,12 +1181,11 @@ img { max-width: 100%; height: auto; }
   margin-bottom: 1rem;
 }
 
-/* Speciality grid - mini produktové kartičky */
+/* Speciality grid */
 .specials-grid {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: 0.75rem;
-  justify-content: center;
-  flex-wrap: wrap;
   margin-bottom: 1.25rem;
 }
 
@@ -1195,30 +1194,55 @@ img { max-width: 100%; height: auto; }
   flex-direction: column;
   align-items: center;
   background: var(--white);
-  border-radius: var(--radius);
-  padding: 0.6rem;
-  width: 100px;
+  border-radius: var(--radius-l);
+  padding: 1.2rem 0.6rem 0.8rem;
   border: 1px solid rgba(0,0,0,0.06);
+  transition: var(--transition);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.special-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--accent, var(--primary));
+  border-radius: var(--radius-l) var(--radius-l) 0 0;
+}
+
+.special-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px color-mix(in srgb, var(--accent, var(--primary)) 15%, transparent);
 }
 
 .special-card--highlight {
-  border-color: var(--primary-semi);
-  background: var(--primary-light);
+  border-color: color-mix(in srgb, var(--accent) 25%, transparent);
+  background: color-mix(in srgb, var(--accent) 4%, var(--white));
 }
 
-.special-img {
-  width: 60px;
-  height: 70px;
-  object-fit: contain;
-  margin-bottom: 0.35rem;
+.special-emoji {
+  font-size: 2rem;
+  margin-bottom: 0.4rem;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
 }
 
 .special-name {
   font-family: var(--font-heading);
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   color: var(--text);
-  line-height: 1.2;
-  text-align: center;
+  line-height: 1.3;
+  font-weight: 700;
+}
+
+.special-desc {
+  font-size: 0.6rem;
+  color: var(--text-light);
+  margin-top: 0.2rem;
+  line-height: 1.3;
 }
 
 .flavors-list {
@@ -2050,6 +2074,10 @@ img { max-width: 100%; height: auto; }
   .value-item { padding: 1rem; }
   .value-title { font-size: var(--text-s); }
   .value-desc { font-size: 0.7rem; }
+
+  .specials-grid { grid-template-columns: repeat(2, 1fr); }
+  .special-emoji { font-size: 1.5rem; }
+  .special-name { font-size: 0.65rem; }
 
   .loc-card-actions { flex-direction: column; }
   .contact-link { width: 100%; justify-content: center; text-align: center; }

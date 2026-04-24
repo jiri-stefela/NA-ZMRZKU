@@ -153,21 +153,25 @@ document.querySelector('#app').innerHTML = `
       <div class="loc-specials fade-in">
         <h3 class="loc-specials-title">Naše speciality</h3>
         <div class="specials-grid">
-          <div class="special-card">
-            <img src="https://www.nazmrzku.cz/wp-content/uploads/2022/03/Pohar-hradecke-mango.png" alt="Hradecké Mango" class="special-img" loading="lazy" />
+          <div class="special-card" style="--accent: #f59e0b">
+            <span class="special-emoji">🥭</span>
             <span class="special-name">Hradecké Mango</span>
+            <span class="special-desc">Mango & maracuja pohár</span>
           </div>
-          <div class="special-card">
-            <img src="https://www.nazmrzku.cz/wp-content/uploads/2020/03/Poh%C3%A1r-hradecke-boruvky.png" alt="Hradecké Borůvky" class="special-img" loading="lazy" />
+          <div class="special-card" style="--accent: #6366f1">
+            <span class="special-emoji">🫐</span>
             <span class="special-name">Hradecké Borůvky</span>
+            <span class="special-desc">Borůvkový pohár s čerstvým ovocem</span>
           </div>
-          <div class="special-card">
-            <img src="https://www.nazmrzku.cz/wp-content/uploads/2020/03/Poh%C3%A1r-hradeck%C3%A9-maliny.png" alt="Hradecké Maliny" class="special-img" loading="lazy" />
+          <div class="special-card" style="--accent: #e11d48">
+            <span class="special-emoji">🍓</span>
             <span class="special-name">Hradecké Maliny</span>
+            <span class="special-desc">Malinový pohár se šlehačkou</span>
           </div>
-          <div class="special-card special-card--highlight">
-            <img src="https://www.nazmrzku.cz/wp-content/uploads/2020/03/Ledova-kava.png" alt="Ledová káva" class="special-img" loading="lazy" />
+          <div class="special-card special-card--highlight" style="--accent: #92400e">
+            <span class="special-emoji">☕</span>
             <span class="special-name">Ledová káva</span>
+            <span class="special-desc">Espresso se zmrzlinou a mlékem</span>
           </div>
         </div>
       </div>
