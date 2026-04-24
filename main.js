@@ -912,11 +912,11 @@ onSnapshot(flavorsQuery, (snapshot) => {
   allFlavorDocs = snapshot.docs.map(d => ({ id: d.id }))
   const all = snapshot.docs.map(d => ({ id: d.id, ...d.data() }))
 
-  const kopecku = all.filter(f => f.location === 'kopecku')
-  const dvora = all.filter(f => f.location === 'dvora')
+  const kopecku = all.filter(f => f.location === 'kopecku' && f.type !== 'triste')
+  const dvora = all.filter(f => f.location === 'dvora' && f.type !== 'triste')
   const specials = all.filter(f => f.location === 'special')
-  const tristeKopecku = all.filter(f => f.location === 'triste-kopecku')
-  const tristeDvora = all.filter(f => f.location === 'triste-dvora')
+  const tristeKopecku = all.filter(f => f.location === 'triste-kopecku' || (f.type === 'triste' && f.location === 'kopecku'))
+  const tristeDvora = all.filter(f => f.location === 'triste-dvora' || (f.type === 'triste' && f.location === 'dvora'))
 
   // Public - per location
   flavorsKopecku.innerHTML = renderFlavorChips(kopecku)
