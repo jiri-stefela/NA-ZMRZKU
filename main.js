@@ -1317,8 +1317,8 @@ const DEFAULT_TIMELINE = [
   { id: 't2019', order: 2, style: 'normal', year: '2019', title: 'Ocenění a média', text: 'Naše pistáciová zmrzlina se dostala mezi nejlepší v ČR. Reportáže na Prima CNN ukázaly celému Česku, jak u nás zmrzlinu děláme.' },
   { id: 't2022', order: 3, style: 'normal', year: '2022', title: 'Dvě provozovny v Hradci', text: 'Otevíráme druhou pobočku U Dvora. Hradec Králové má konečně svoji zmrzlinárnu na dvou místech — a Hradečáci si ji zamilovali.' },
   { id: 't2026', order: 4, style: 'highlight', year: '2026', title: 'Předání žezla', text: '**Jiřin a Nikouš** přebírají zmrzlinové království. Receptury zůstávají, kvalita zůstává — jen přicházejí nové nápady a energie.', quote: '„První sezónu budu vše sledovat z povzdálí." — Jiří' },
-  { id: 't2026winter', order: 5, style: 'winter', year: 'Zima 2026', title: '❄️ Kdo říkal, že zmrzlinová sezóna končí s podzimem? ❄️', text: 'Máme pro vás obrovskou novinku! Ani v chladných měsících vás nenecháme na holičkách. V Kopečku oficiálně startuje naše zbrusu nová **WINTER EDITION**! 🍨✨' },
-  { id: 't2026plus', order: 6, style: 'future', year: '2026+', title: 'Příběh pokračuje', text: 'Hradec má svoji zmrzlinárnu. S novou energií a odhodláním píšeme další kapitoly příběhu NA ZMRZKU. Přijďte je ochutnat.' },
+  { id: 't2026plus', order: 5, style: 'future', year: '2026+', title: 'Příběh pokračuje', text: 'Hradec má svoji zmrzlinárnu. S novou energií a odhodláním píšeme další kapitoly příběhu NA ZMRZKU. Přijďte je ochutnat.' },
+  { id: 't2026winter', order: 6, style: 'winter', year: 'Zima 2026', title: '❄️ Kdo říkal, že zmrzlinová sezóna končí s podzimem? ❄️', text: 'Máme pro vás obrovskou novinku! Ani v chladných měsících vás nenecháme na holičkách. V Kopečku oficiálně startuje naše zbrusu nová **WINTER EDITION**! 🍨✨' },
 ]
 
 let timeline = DEFAULT_TIMELINE
