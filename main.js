@@ -117,42 +117,12 @@ document.querySelector('#app').innerHTML = `
             <a href="https://maps.app.goo.gl/We5ZpddgCA5yF5YA7" target="_blank" rel="noopener noreferrer" class="contact-link contact-link--review">Napsat recenzi</a>
           </div>
         </div>
-
-        <!-- U DVORA -->
-        <div class="loc-card">
-          <div class="loc-card-icon">${svg.cone}</div>
-          <div class="loc-card-head">
-            <h3 class="loc-card-name">${svg.pin} NA&nbsp;ZMRZKU U Dvora</h3>
-            <span class="loc-card-badge">2 točené</span>
-          </div>
-          <div class="loc-card-info">
-            <div class="loc-card-row">${svg.pin} <span>U Dvora 839, 500 03 Hradec Králové</span></div>
-            <div class="loc-card-row">${svg.clock} <span id="hours-dvora">Po–Ne: 13:00–18:00</span></div>
-          </div>
-          <div class="loc-card-rating">
-            <span class="rating-stars">4,6</span>
-            <span class="rating-count">207 recenzí</span>
-          </div>
-          <div class="loc-card-flavors" id="flavors-dvora">
-            <div class="flavors-loading">Načítám příchutě…</div>
-          </div>
-          <div class="loc-card-triste">
-            <h4 class="loc-card-triste-title">🧊 Ledové tříště</h4>
-            <div class="loc-card-triste-list" id="triste-dvora">
-              <div class="flavors-loading">Načítám…</div>
-            </div>
-          </div>
-          <div class="loc-card-actions">
-            <a href="https://maps.app.goo.gl/sk4FJPn1xfHAeRGz9" target="_blank" rel="noopener noreferrer" class="contact-link">Navigovat</a>
-            <a href="https://maps.app.goo.gl/sk4FJPn1xfHAeRGz9" target="_blank" rel="noopener noreferrer" class="contact-link contact-link--review">Napsat recenzi</a>
-          </div>
-        </div>
       </div>
 
       <!-- SPECIALITY - poháry a káva -->
       <div class="loc-specials fade-in">
         <h3 class="loc-specials-title">Naše speciality</h3>
-        <div class="specials-grid">
+        <div class="specials-grid" id="specials-grid">
           <div class="special-card" style="--accent: #f59e0b">
             <span class="special-emoji">🥭</span>
             <span class="special-name">Hradecké Mango</span>
@@ -281,8 +251,8 @@ document.querySelector('#app').innerHTML = `
           <span class="stat-label">Google hodnocení</span>
         </div>
         <div class="stat-item">
-          <span class="stat-number">2</span>
-          <span class="stat-label">Pobočky v HK</span>
+          <span class="stat-number">1</span>
+          <span class="stat-label">Pobočka v HK</span>
         </div>
       </div>
 
@@ -480,10 +450,8 @@ adminPanel.innerHTML = `
             <label for="quick-location">Provozovna</label>
             <select id="quick-location">
               <option value="kopecku">V Kopečku</option>
-              <option value="dvora">U Dvora</option>
               <option value="special">Specialita</option>
               <option value="triste-kopecku">Tříště – V Kopečku</option>
-              <option value="triste-dvora">Tříště – U Dvora</option>
             </select>
           </div>
           <button type="button" class="btn btn--primary btn--small" id="quick-add-btn">Přidat vybrané <span id="quick-add-count"></span></button>
@@ -516,10 +484,8 @@ adminPanel.innerHTML = `
             <label for="flavor-location">Provozovna</label>
             <select id="flavor-location">
               <option value="kopecku">V Kopečku</option>
-              <option value="dvora">U Dvora</option>
               <option value="special">Specialita</option>
               <option value="triste-kopecku">Tříště – V Kopečku</option>
-              <option value="triste-dvora">Tříště – U Dvora</option>
             </select>
           </div>
           <button type="submit" class="btn btn--primary btn--small" id="flavor-submit-btn">Přidat</button>
@@ -542,10 +508,6 @@ adminPanel.innerHTML = `
         <div class="admin-hours-loc">
           <label>V Kopečku</label>
           <input type="text" id="hours-kopecku-input" placeholder="Po–Ne: 11:00–18:00" />
-        </div>
-        <div class="admin-hours-loc">
-          <label>U Dvora</label>
-          <input type="text" id="hours-dvora-input" placeholder="Po–Ne: 13:00–18:00" />
         </div>
         <button type="button" class="btn btn--primary btn--small" id="save-hours-btn">Uložit hodiny</button>
       </div>
@@ -659,8 +621,7 @@ const flavorLocationInput = document.getElementById('flavor-location')
 const flavorSubmitBtn = document.getElementById('flavor-submit-btn')
 const adminFlavorsList = document.getElementById('admin-flavors-list')
 const flavorsKopecku = document.getElementById('flavors-kopecku')
-const flavorsDvora = document.getElementById('flavors-dvora')
-const flavorsSpecials = document.getElementById('flavors-specials')
+const specialsGrid = document.getElementById('specials-grid')
 
 const typeLabels = { tocena: 'Točená', gelato: 'Gelato', sorbet: 'Sorbet', special: 'Specialita', triste: 'Ledová tříšť' }
 const typeColors = { tocena: '#E03B3B', gelato: '#e87942', sorbet: '#f59e0b', special: '#8b5cf6', triste: '#3498db' }
@@ -906,28 +867,36 @@ function renderTristeChips(flavors, containerEl) {
   `).join('')
 }
 
+// Speciality z adminu - přidají se za pevné karty pohárů
+function renderSpecialCards(specials) {
+  specialsGrid.querySelectorAll('.special-card--dynamic').forEach(el => el.remove())
+  specialsGrid.insertAdjacentHTML('beforeend', specials.map(f => `
+    <div class="special-card special-card--dynamic" style="--accent: ${typeColors.special}">
+      <span class="special-emoji">🍨</span>
+      <span class="special-name">${f.name}</span>
+    </div>
+  `).join(''))
+}
+
 // Realtime listener
 const flavorsQuery = query(collection(db, 'flavors'), orderBy('createdAt', 'desc'))
 
 const tristeKopeckuEl = document.getElementById('triste-kopecku')
-const tristeDvoraEl = document.getElementById('triste-dvora')
 
 onSnapshot(flavorsQuery, (snapshot) => {
   allFlavorDocs = snapshot.docs.map(d => ({ id: d.id }))
   const all = snapshot.docs.map(d => ({ id: d.id, ...d.data() }))
 
-  const kopecku = all.filter(f => f.location === 'kopecku' && f.type !== 'triste')
-  const dvora = all.filter(f => f.location === 'dvora' && f.type !== 'triste')
-  const specials = all.filter(f => f.location === 'special')
+  const specials = all.filter(f => f.location === 'special' || f.type === 'special')
+  const kopecku = all.filter(f => f.location === 'kopecku' && f.type !== 'triste' && f.type !== 'special')
   const tristeKopecku = all.filter(f => f.location === 'triste-kopecku' || (f.type === 'triste' && f.location === 'kopecku'))
-  const tristeDvora = all.filter(f => f.location === 'triste-dvora' || (f.type === 'triste' && f.location === 'dvora'))
+  // Příchutě ze zrušené pobočky U Dvora - jen v adminu, aby šly smazat
+  const zruseno = all.filter(f => (f.location === 'dvora' || f.location === 'triste-dvora') && f.type !== 'special')
 
   // Public - per location
   flavorsKopecku.innerHTML = renderFlavorChips(kopecku)
-  flavorsDvora.innerHTML = renderFlavorChips(dvora)
-  if (flavorsSpecials) flavorsSpecials.innerHTML = renderFlavorChips(specials)
   tristeKopeckuEl.innerHTML = renderTristeChips(tristeKopecku, tristeKopeckuEl)
-  tristeDvoraEl.innerHTML = renderTristeChips(tristeDvora, tristeDvoraEl)
+  renderSpecialCards(specials)
 
   // Admin list
   if (all.length === 0) {
@@ -935,10 +904,9 @@ onSnapshot(flavorsQuery, (snapshot) => {
   } else {
     const grouped = [
       { label: 'V Kopečku', items: kopecku },
-      { label: 'U Dvora', items: dvora },
       { label: 'Tříště – V Kopečku', items: tristeKopecku },
-      { label: 'Tříště – U Dvora', items: tristeDvora },
       { label: 'Speciality', items: specials },
+      { label: 'U Dvora (zrušeno – smažte)', items: zruseno },
     ].filter(g => g.items.length > 0)
 
     adminFlavorsList.innerHTML = grouped.map(g => `
@@ -962,15 +930,12 @@ onSnapshot(flavorsQuery, (snapshot) => {
 
 // ============ OPENING HOURS (Firestore) ============
 const hoursKopeckuEl = document.getElementById('hours-kopecku')
-const hoursDvoraEl = document.getElementById('hours-dvora')
 const hoursKopeckuInput = document.getElementById('hours-kopecku-input')
-const hoursDvoraInput = document.getElementById('hours-dvora-input')
 const saveHoursBtn = document.getElementById('save-hours-btn')
 
 // Default hours (fallback)
 const defaultHours = {
   kopecku: { text: 'Po–Ne: 11:00–18:00', open: '11:00', close: '18:00' },
-  dvora: { text: 'Po–Ne: 13:00–18:00', open: '13:00', close: '18:00' },
 }
 
 function isOpenNow(openTime, closeTime) {
@@ -995,20 +960,16 @@ function renderHours(el, data) {
 onSnapshot(doc(db, 'settings', 'hours'), (snap) => {
   const data = snap.exists() ? snap.data() : null
   const kopeckuData = data?.kopecku || defaultHours.kopecku
-  const dvoraData = data?.dvora || defaultHours.dvora
 
   renderHours(hoursKopeckuEl, kopeckuData)
-  renderHours(hoursDvoraEl, dvoraData)
 
   // Fill admin inputs
   hoursKopeckuInput.value = kopeckuData.text
-  hoursDvoraInput.value = dvoraData.text
 })
 
 // Save hours from admin
 saveHoursBtn.addEventListener('click', async () => {
   const kopeckuText = hoursKopeckuInput.value.trim()
-  const dvoraText = hoursDvoraInput.value.trim()
 
   // Parse open/close times from text like "Po–Ne: 11:00–18:00"
   function parseTimes(text) {
@@ -1017,11 +978,9 @@ saveHoursBtn.addEventListener('click', async () => {
   }
 
   const kopeckuTimes = parseTimes(kopeckuText)
-  const dvoraTimes = parseTimes(dvoraText)
 
   await setDoc(doc(db, 'settings', 'hours'), {
     kopecku: { text: kopeckuText, ...kopeckuTimes },
-    dvora: { text: dvoraText, ...dvoraTimes },
   })
 
   saveHoursBtn.textContent = 'Uloženo!'
