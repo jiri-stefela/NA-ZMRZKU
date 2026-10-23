@@ -98,6 +98,7 @@ document.querySelector('#app').innerHTML = `
           <div class="loc-card-info">
             <div class="loc-card-row">${svg.pin} <span>V Kopečku 163, 500 02 Hradec Králové</span></div>
             <div class="loc-card-row">${svg.clock} <span id="hours-kopecku">Po–Ne: 11:00–18:00</span></div>
+            <div class="loc-card-notice" id="notice-kopecku" hidden></div>
           </div>
           <div class="loc-card-rating">
             <span class="rating-stars">4,6</span>
@@ -525,10 +526,21 @@ adminPanel.innerHTML = `
       <h3 class="admin-section-title">Otevírací doba</h3>
       <div class="admin-hours">
         <div class="admin-hours-loc">
-          <label>V Kopečku</label>
+          <label for="hours-kopecku-input">V Kopečku</label>
           <input type="text" id="hours-kopecku-input" placeholder="Po–Ne: 11:00–18:00" />
         </div>
+        <p class="admin-hint">Více časů oddělte středníkem, např. „Po–Pá: 12:00–18:00; So–Ne: 11:00–19:00“. Den, který v textu není, se bere jako zavřeno.</p>
+        <label class="admin-toggle">
+          <input type="checkbox" id="hours-closed-input" />
+          <span class="admin-toggle-track"><span class="admin-toggle-thumb"></span></span>
+          <span class="admin-toggle-text"><strong>Dočasně zavřeno</strong><small>Konec sezóny, dovolená… Na webu bude „Zavřeno“ bez ohledu na hodiny.</small></span>
+        </label>
+        <div class="admin-hours-loc" id="hours-note-row">
+          <label for="hours-note-input">Zpráva</label>
+          <input type="text" id="hours-note-input" placeholder="Sezónu jsme ukončili, uvidíme se na jaře 🍦" />
+        </div>
         <button type="button" class="btn btn--primary btn--small" id="save-hours-btn">Uložit hodiny</button>
+        <p class="quick-add-status" id="hours-save-status"></p>
       </div>
     </div>
 
@@ -1191,68 +1203,104 @@ renderAll()
 
 // ============ OPENING HOURS (Firestore) ============
 const hoursKopeckuEl = document.getElementById('hours-kopecku')
+const noticeKopeckuEl = document.getElementById('notice-kopecku')
 const hoursKopeckuInput = document.getElementById('hours-kopecku-input')
+const hoursClosedInput = document.getElementById('hours-closed-input')
+const hoursNoteInput = document.getElementById('hours-note-input')
 const saveHoursBtn = document.getElementById('save-hours-btn')
 
-// Default hours (fallback)
-const defaultHours = {
-  kopecku: { text: 'Po–Ne: 11:00–18:00', open: '11:00', close: '18:00' },
+const defaultHours = { text: 'Po–Ne: 11:00–18:00', closed: false, note: '' }
+let hoursData = defaultHours
+
+// Po = 1 … Ne = 7
+const DAY_INDEX = { po: 1, út: 2, ut: 2, st: 3, čt: 4, ct: 4, pá: 5, pa: 5, so: 6, ne: 7 }
+const DAY_RE = 'po|út|ut|st|čt|ct|pá|pa|so|ne'
+const TIME_RE = '(\\d{1,2})[:.](\\d{2})'
+
+// "Po–Pá: 12:00–18:00; So–Ne: 11:00–19:00" -> [{ from: 1, to: 5, open: 720, close: 1080 }, …]
+function parseHours(text) {
+  const rules = []
+  const withDays = new RegExp(`(${DAY_RE})(?:\\s*[–-]\\s*(${DAY_RE}))?\\s*:?\\s*${TIME_RE}\\s*[–-]\\s*${TIME_RE}`, 'gi')
+  for (const m of text.matchAll(withDays)) {
+    const from = DAY_INDEX[m[1].toLowerCase()]
+    rules.push({ from, to: m[2] ? DAY_INDEX[m[2].toLowerCase()] : from, open: m[3] * 60 + +m[4], close: m[5] * 60 + +m[6] })
+  }
+  if (rules.length === 0) {
+    // Jen čas bez dnů = každý den
+    const m = text.match(new RegExp(`${TIME_RE}\\s*[–-]\\s*${TIME_RE}`))
+    if (m) rules.push({ from: 1, to: 7, open: m[1] * 60 + +m[2], close: m[3] * 60 + +m[4] })
+  }
+  return rules
 }
 
-function isOpenNow(openTime, closeTime) {
-  const now = new Date()
-  const [oh, om] = openTime.split(':').map(Number)
-  const [ch, cm] = closeTime.split(':').map(Number)
-  const mins = now.getHours() * 60 + now.getMinutes()
-  return mins >= oh * 60 + om && mins < ch * 60 + cm
+// Čas v Česku, ať je návštěvník kdekoli
+function pragueNow() {
+  const parts = Object.fromEntries(new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/Prague', weekday: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
+  }).formatToParts(new Date()).map(p => [p.type, p.value]))
+  const day = { Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6, Sun: 7 }[parts.weekday]
+  return { day, mins: +parts.hour * 60 + +parts.minute }
 }
 
-function renderHours(el, data) {
-  const open = isOpenNow(data.open, data.close)
-  el.innerHTML = `
-    ${data.text}
+function isOpenNow(data) {
+  if (data.closed) return false
+  const { day, mins } = pragueNow()
+  return parseHours(data.text || '').some(r => {
+    const inDays = r.from <= r.to ? day >= r.from && day <= r.to : day >= r.from || day <= r.to
+    return inDays && mins >= r.open && mins < r.close
+  })
+}
+
+function renderHours() {
+  const open = isOpenNow(hoursData)
+  hoursKopeckuEl.innerHTML = `
+    ${esc(hoursData.text)}
     <span class="hours-status ${open ? 'hours-status--open' : 'hours-status--closed'}">
-      ${open ? 'Otevřeno' : 'Zavřeno'}
+      ${hoursData.closed ? 'Dočasně zavřeno' : open ? 'Otevřeno' : 'Zavřeno'}
     </span>
   `
+  const note = hoursData.closed ? (hoursData.note || '').trim() : ''
+  noticeKopeckuEl.textContent = note
+  noticeKopeckuEl.hidden = !note
 }
 
-// Load hours from Firestore
+function syncNoteRow() {
+  document.getElementById('hours-note-row').style.opacity = hoursClosedInput.checked ? '1' : '0.5'
+}
+hoursClosedInput.addEventListener('change', syncNoteRow)
+
 onSnapshot(doc(db, 'settings', 'hours'), (snap) => {
-  const data = snap.exists() ? snap.data() : null
-  const kopeckuData = data?.kopecku || defaultHours.kopecku
+  const k = snap.exists() ? snap.data()?.kopecku : null
+  hoursData = k ? { text: k.text || defaultHours.text, closed: !!k.closed, note: k.note || '' } : defaultHours
+  renderHours()
 
-  renderHours(hoursKopeckuEl, kopeckuData)
-
-  // Fill admin inputs
-  hoursKopeckuInput.value = kopeckuData.text
+  hoursKopeckuInput.value = hoursData.text
+  hoursClosedInput.checked = hoursData.closed
+  hoursNoteInput.value = hoursData.note
+  syncNoteRow()
 })
 
-// Save hours from admin
 saveHoursBtn.addEventListener('click', async () => {
-  const kopeckuText = hoursKopeckuInput.value.trim()
-
-  // Parse open/close times from text like "Po–Ne: 11:00–18:00"
-  function parseTimes(text) {
-    const match = text.match(/(\d{1,2}:\d{2})\s*[–-]\s*(\d{1,2}:\d{2})/)
-    return match ? { open: match[1], close: match[2] } : { open: '00:00', close: '23:59' }
+  const statusEl = document.getElementById('hours-save-status')
+  const text = hoursKopeckuInput.value.trim()
+  if (!hoursClosedInput.checked && parseHours(text).length === 0) {
+    showStatus(statusEl, 'Nerozumím času – napište např. „Po–Ne: 11:00–18:00“', false)
+    return
   }
-
-  const kopeckuTimes = parseTimes(kopeckuText)
-
-  await setDoc(doc(db, 'settings', 'hours'), {
-    kopecku: { text: kopeckuText, ...kopeckuTimes },
-  })
-
-  saveHoursBtn.textContent = 'Uloženo!'
-  setTimeout(() => { saveHoursBtn.textContent = 'Uložit hodiny' }, 1500)
+  saveHoursBtn.disabled = true
+  try {
+    await setDoc(doc(db, 'settings', 'hours'), {
+      kopecku: { text, closed: hoursClosedInput.checked, note: hoursNoteInput.value.trim() },
+    })
+    showStatus(statusEl, hoursClosedInput.checked ? 'Uloženo – na webu je teď „Dočasně zavřeno“' : 'Uloženo', true)
+  } catch (err) {
+    showStatus(statusEl, saveErrorText(err), false)
+  }
+  saveHoursBtn.disabled = false
 })
 
-// Refresh open/closed status every minute
-setInterval(() => {
-  const kopeckuData = { text: hoursKopeckuEl.textContent.replace(/Otevřeno|Zavřeno/g, '').trim() }
-  // Re-trigger by reading the snapshot again - it's already listening
-}, 60000)
+// Stav Otevřeno/Zavřeno přepočítat každou minutu
+setInterval(renderHours, 60000)
 
 // Animované lentičky / sprinkles - barevné jako Smarties
 const sprinkleColors = [
