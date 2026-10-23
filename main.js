@@ -490,6 +490,7 @@ adminPanel.innerHTML = `
           </div>
           <button type="submit" class="btn btn--primary btn--small" id="flavor-submit-btn">Přidat</button>
         </div>
+        <p class="quick-add-status" id="flavor-form-status"></p>
       </form>
     </div>
 
@@ -537,6 +538,7 @@ document.getElementById('quick-add-btn').addEventListener('click', quickAddFlavo
 
 // Clear all flavors
 let allFlavorDocs = []
+let allFlavors = []
 document.getElementById('clear-all-flavors-btn').addEventListener('click', async () => {
   if (!confirm('Opravdu smazat VŠECHNY příchutě? Tato akce je nevratná.')) return
   for (const d of allFlavorDocs) {
@@ -776,9 +778,15 @@ async function quickAddFlavors() {
   statusEl.textContent = `Přidávám ${selectedQuickFlavors.size} příchutí...`
   statusEl.className = 'quick-add-status'
 
-  for (const key of selectedQuickFlavors) {
-    const [name, type] = key.split('|')
-    await addDoc(collection(db, 'flavors'), { name, type, location, createdAt: new Date() })
+  try {
+    for (const key of selectedQuickFlavors) {
+      const [name, type] = key.split('|')
+      await addDoc(collection(db, 'flavors'), { name, type, location, createdAt: new Date() })
+    }
+  } catch (err) {
+    statusEl.textContent = saveErrorText(err)
+    statusEl.className = 'quick-add-status quick-add-status--error'
+    return
   }
 
   statusEl.textContent = `Přidáno ${selectedQuickFlavors.size} příchutí!`
@@ -789,29 +797,64 @@ async function quickAddFlavors() {
   setTimeout(() => { statusEl.textContent = ''; statusEl.className = 'quick-add-status' }, 2500)
 }
 
+// Typ "Specialita" a provozovna "Specialita" patří k sobě
+flavorTypeInput.addEventListener('change', () => {
+  if (flavorTypeInput.value === 'special') flavorLocationInput.value = 'special'
+  else if (flavorLocationInput.value === 'special') flavorLocationInput.value = 'kopecku'
+})
+flavorLocationInput.addEventListener('change', () => {
+  if (flavorLocationInput.value === 'special') flavorTypeInput.value = 'special'
+  else if (flavorTypeInput.value === 'special') flavorTypeInput.value = 'tocena'
+})
+
+function saveErrorText(err) {
+  console.error(err)
+  return err?.code === 'permission-denied'
+    ? 'Neuloženo – nejste přihlášeni. Odhlaste se a přihlaste znovu.'
+    : 'Neuloženo – zkontrolujte připojení a zkuste to znovu.'
+}
+
 flavorForm.addEventListener('submit', async (e) => {
   e.preventDefault()
   const name = flavorNameInput.value.trim()
   const type = flavorTypeInput.value
   const location = flavorLocationInput.value
+  const statusEl = document.getElementById('flavor-form-status')
   if (!name) return
 
-  if (flavorEditId.value) {
-    await updateDoc(doc(db, 'flavors', flavorEditId.value), { name, type, location })
-    flavorEditId.value = ''
-    flavorSubmitBtn.textContent = 'Přidat'
-  } else {
-    await addDoc(collection(db, 'flavors'), { name, type, location, createdAt: new Date() })
+  flavorSubmitBtn.disabled = true
+  try {
+    if (flavorEditId.value) {
+      await updateDoc(doc(db, 'flavors', flavorEditId.value), { name, type, location })
+      flavorEditId.value = ''
+      flavorSubmitBtn.textContent = 'Přidat'
+    } else {
+      await addDoc(collection(db, 'flavors'), { name, type, location, createdAt: new Date() })
+    }
+    flavorNameInput.value = ''
+    statusEl.textContent = type === 'special' || location === 'special'
+      ? `Uloženo – „${name}“ je na webu v sekci Naše speciality`
+      : `Uloženo – „${name}“`
+    statusEl.className = 'quick-add-status quick-add-status--success'
+  } catch (err) {
+    statusEl.textContent = saveErrorText(err)
+    statusEl.className = 'quick-add-status quick-add-status--error'
   }
-  flavorNameInput.value = ''
-  flavorTypeInput.value = 'tocena'
+  flavorSubmitBtn.disabled = false
+  setTimeout(() => { statusEl.textContent = ''; statusEl.className = 'quick-add-status' }, 4000)
 })
 
-function startEdit(id, name, type, location) {
+function startEdit(id) {
+  const f = allFlavors.find(x => x.id === id)
+  if (!f) return
   flavorEditId.value = id
-  flavorNameInput.value = name
-  flavorTypeInput.value = type
-  flavorLocationInput.value = location
+  flavorNameInput.value = f.name
+  flavorTypeInput.value = f.type
+  // Zrušené provozovny (U Dvora) se při úpravě přesunou na V Kopečku
+  flavorLocationInput.value = f.location === 'triste-dvora' ? 'triste-kopecku'
+    : ['kopecku', 'special', 'triste-kopecku'].includes(f.location) ? f.location : 'kopecku'
+  if (f.type === 'special') flavorLocationInput.value = 'special'
+  document.querySelector('.admin-tab[data-tab="custom"]').click()
   flavorSubmitBtn.textContent = 'Uložit'
   flavorNameInput.focus()
 }
@@ -822,8 +865,14 @@ async function deleteFlavor(id) {
   }
 }
 
-window._editFlavor = startEdit
-window._deleteFlavor = deleteFlavor
+adminFlavorsList.addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-edit], [data-delete]')
+  if (!btn) return
+  if (btn.dataset.edit) startEdit(btn.dataset.edit)
+  else deleteFlavor(btn.dataset.delete)
+})
+
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
 
 function renderFlavorChips(flavors) {
   if (flavors.length === 0) return '<div class="flavors-empty-box"><span class="flavors-empty-icon">🍦</span><p class="flavors-empty">Příchutě brzy doplníme</p></div>'
@@ -844,7 +893,7 @@ function renderFlavorChips(flavors) {
       <div class="flavor-group-chips">${items.map(f => `
         <div class="flavor-chip" style="--chip-color: ${typeColors[f.type]}">
           <span class="flavor-chip-dot"></span>
-          <span class="flavor-chip-name">${f.name}</span>
+          <span class="flavor-chip-name">${esc(f.name)}</span>
         </div>`).join('')}
       </div>
     </div>`
@@ -862,7 +911,7 @@ function renderTristeChips(flavors, containerEl) {
   return flavors.map(f => `
     <div class="flavor-chip flavor-chip--triste" style="--chip-color: ${typeColors.triste}">
       <span class="flavor-chip-dot"></span>
-      <span class="flavor-chip-name">${f.name}</span>
+      <span class="flavor-chip-name">${esc(f.name)}</span>
     </div>
   `).join('')
 }
@@ -873,7 +922,7 @@ function renderSpecialCards(specials) {
   specialsGrid.insertAdjacentHTML('beforeend', specials.map(f => `
     <div class="special-card special-card--dynamic" style="--accent: ${typeColors.special}">
       <span class="special-emoji">🍨</span>
-      <span class="special-name">${f.name}</span>
+      <span class="special-name">${esc(f.name)}</span>
     </div>
   `).join(''))
 }
@@ -886,12 +935,13 @@ const tristeKopeckuEl = document.getElementById('triste-kopecku')
 onSnapshot(flavorsQuery, (snapshot) => {
   allFlavorDocs = snapshot.docs.map(d => ({ id: d.id }))
   const all = snapshot.docs.map(d => ({ id: d.id, ...d.data() }))
+  allFlavors = all
 
   const specials = all.filter(f => f.location === 'special' || f.type === 'special')
   const kopecku = all.filter(f => f.location === 'kopecku' && f.type !== 'triste' && f.type !== 'special')
-  const tristeKopecku = all.filter(f => f.location === 'triste-kopecku' || (f.type === 'triste' && f.location === 'kopecku'))
-  // Příchutě ze zrušené pobočky U Dvora - jen v adminu, aby šly smazat
-  const zruseno = all.filter(f => (f.location === 'dvora' || f.location === 'triste-dvora') && f.type !== 'special')
+  const tristeKopecku = all.filter(f => f.type !== 'special' && (f.location === 'triste-kopecku' || (f.type === 'triste' && f.location === 'kopecku')))
+  // Zbytek (zrušená pobočka U Dvora apod.) - jen v adminu, aby šly smazat
+  const zruseno = all.filter(f => !specials.includes(f) && !kopecku.includes(f) && !tristeKopecku.includes(f))
 
   // Public - per location
   flavorsKopecku.innerHTML = renderFlavorChips(kopecku)
@@ -906,7 +956,7 @@ onSnapshot(flavorsQuery, (snapshot) => {
       { label: 'V Kopečku', items: kopecku },
       { label: 'Tříště – V Kopečku', items: tristeKopecku },
       { label: 'Speciality', items: specials },
-      { label: 'U Dvora (zrušeno – smažte)', items: zruseno },
+      { label: 'Ostatní / U Dvora (zrušeno – smažte)', items: zruseno },
     ].filter(g => g.items.length > 0)
 
     adminFlavorsList.innerHTML = grouped.map(g => `
@@ -915,11 +965,11 @@ onSnapshot(flavorsQuery, (snapshot) => {
         ${g.items.map(f => `
           <div class="admin-flavor-item">
             <span class="admin-flavor-dot" style="background: ${typeColors[f.type] || typeColors.tocena}"></span>
-            <span class="admin-flavor-name">${f.name}</span>
+            <span class="admin-flavor-name">${esc(f.name)}</span>
             <span class="admin-flavor-type">${typeLabels[f.type] || f.type}</span>
             <div class="admin-flavor-actions">
-              <button onclick="window._editFlavor('${f.id}', '${f.name.replace(/'/g, "\\'")}', '${f.type}', '${f.location}')" class="admin-btn-edit">Upravit</button>
-              <button onclick="window._deleteFlavor('${f.id}')" class="admin-btn-delete">Smazat</button>
+              <button type="button" data-edit="${f.id}" class="admin-btn-edit">Upravit</button>
+              <button type="button" data-delete="${f.id}" class="admin-btn-delete">Smazat</button>
             </div>
           </div>
         `).join('')}

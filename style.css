@@ -1232,6 +1232,7 @@ img { max-width: 100%; height: auto; }
 }
 
 .special-name {
+  overflow-wrap: anywhere;
   font-family: var(--font-heading);
   font-size: 0.75rem;
   color: var(--text);
