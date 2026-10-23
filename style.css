@@ -614,6 +614,29 @@ img { max-width: 100%; height: auto; }
   border-color: var(--primary-semi);
 }
 
+/* Zimní událost */
+.timeline-dot--winter {
+  background: #38bdf8;
+  border-color: #0ea5e9;
+  box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.25);
+}
+
+.timeline-item--winter .timeline-content {
+  position: relative;
+  background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+  border-color: #bae6fd;
+}
+
+.timeline-item--winter .timeline-content:hover {
+  border-color: #7dd3fc;
+  box-shadow: 0 6px 20px rgba(14, 165, 233, 0.15);
+}
+
+.timeline-item--winter .timeline-year { color: #0284c7; }
+.timeline-item--winter .timeline-title { color: #075985; }
+.timeline-item--winter .timeline-text { color: #334155; }
+.timeline-item--winter .timeline-text strong { color: #0284c7; }
+
 /* Dekorativní lentičky / kapky - animované */
 .story {
   position: relative;
@@ -1622,7 +1645,8 @@ img { max-width: 100%; height: auto; }
 }
 
 .form-field input,
-.form-field select {
+.form-field select,
+.form-field textarea {
   padding: 0.7rem 1rem;
   border: 2px solid rgba(0,0,0,0.08);
   border-radius: var(--radius);
@@ -1635,7 +1659,8 @@ img { max-width: 100%; height: auto; }
 }
 
 .form-field input:focus,
-.form-field select:focus {
+.form-field select:focus,
+.form-field textarea:focus {
   border-color: var(--primary);
   background: var(--white);
   box-shadow: 0 0 0 3px rgba(224, 59, 59, 0.1);
@@ -2152,6 +2177,29 @@ img { max-width: 100%; height: auto; }
 .admin-cat-order button:hover:not(:disabled) { background: var(--cat-color); color: var(--white); }
 .admin-cat-order button:disabled { opacity: 0.3; cursor: default; }
 
+/* Příběh v adminu */
+.story-field { margin-top: 0.75rem; }
+.story-field textarea { resize: vertical; min-height: 5.5rem; line-height: 1.5; }
+.form-field--year { width: 9rem; flex-shrink: 0; }
+.story-form-actions { justify-content: flex-end; margin-top: 0.75rem; }
+
+.admin-story-item { --cat-color: var(--primary); }
+.admin-story-item--normal { --cat-color: #f3a6a6; }
+.admin-story-item--winter { --cat-color: #0ea5e9; }
+.admin-story-item--future { --cat-color: #bbb; border-left-style: dashed; }
+
+.admin-story-year {
+  flex-shrink: 0;
+  min-width: 4.2rem;
+  padding: 0.25rem 0.5rem;
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  text-align: center;
+  color: color-mix(in srgb, var(--cat-color) 80%, var(--black));
+  background: color-mix(in srgb, var(--cat-color) 12%, var(--white));
+  border-radius: var(--radius-pill);
+}
+
 .admin-divider {
   height: 1px;
   background: rgba(0,0,0,0.08);
@@ -2411,6 +2459,9 @@ img { max-width: 100%; height: auto; }
   .flavor-form-row { align-items: stretch; }
   .category-form .flavor-form-row { flex-direction: row; flex-wrap: wrap; align-items: flex-end; }
   .category-form .form-field--grow { order: -1; flex-basis: 100%; }
+  #story-form .flavor-form-row { flex-direction: column; align-items: stretch; }
+  #story-form .form-field--grow { order: 0; }
+  .form-field--year { width: 100%; }
   .category-form-footer { flex-direction: column; align-items: stretch; }
   .category-preview-wrap { max-width: none; }
   .category-form-actions .btn { flex: 1; justify-content: center; }

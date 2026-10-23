@@ -185,54 +185,8 @@ document.querySelector('#app').innerHTML = `
         <p class="section-subtitle">Jak se zmrzka stala srdcovkou Hradce</p>
       </div>
 
-      <div class="timeline fade-in">
+      <div class="timeline fade-in" id="timeline">
         <div class="timeline-line"></div>
-
-        <div class="timeline-item timeline-item--left">
-          <div class="timeline-dot"></div>
-          <div class="timeline-content">
-            <span class="timeline-year">2016</span>
-            <h3 class="timeline-title">Kde to všechno začalo</h3>
-            <p class="timeline-text">Jiří založil NA&nbsp;ZMRZKU s jedinou vizí — dělat poctivou zmrzlinu, která potěší. Z malého stánku v Hradci Králové se zrodil příběh, který trvá dodnes.</p>
-          </div>
-        </div>
-
-        <div class="timeline-item timeline-item--right">
-          <div class="timeline-dot"></div>
-          <div class="timeline-content">
-            <span class="timeline-year">2019</span>
-            <h3 class="timeline-title">Ocenění a média</h3>
-            <p class="timeline-text">Naše pistáciová zmrzlina se dostala mezi nejlepší v ČR. Reportáže na Prima CNN ukázaly celému Česku, jak u nás zmrzlinu děláme.</p>
-          </div>
-        </div>
-
-        <div class="timeline-item timeline-item--left">
-          <div class="timeline-dot"></div>
-          <div class="timeline-content">
-            <span class="timeline-year">2022</span>
-            <h3 class="timeline-title">Dvě provozovny v Hradci</h3>
-            <p class="timeline-text">Otevíráme druhou pobočku U Dvora. Hradec Králové má konečně svoji zmrzlinárnu na dvou místech — a Hradečáci si ji zamilovali.</p>
-          </div>
-        </div>
-
-        <div class="timeline-item timeline-item--right">
-          <div class="timeline-dot timeline-dot--highlight"></div>
-          <div class="timeline-content">
-            <span class="timeline-year">2026</span>
-            <h3 class="timeline-title">Předání žezla</h3>
-            <p class="timeline-text"><strong>Jiřin a Nikouš</strong> přebírají zmrzlinové království. Receptury zůstávají, kvalita zůstává — jen přicházejí nové nápady a energie.</p>
-            <p class="timeline-quote">„První sezónu budu vše sledovat z povzdálí." — Jiří</p>
-          </div>
-        </div>
-
-        <div class="timeline-item timeline-item--left">
-          <div class="timeline-dot timeline-dot--future"></div>
-          <div class="timeline-content">
-            <span class="timeline-year">2026+</span>
-            <h3 class="timeline-title">Příběh pokračuje</h3>
-            <p class="timeline-text">Hradec má svoji zmrzlinárnu. S novou energií a odhodláním píšeme další kapitoly příběhu NA&nbsp;ZMRZKU. Přijďte je ochutnat.</p>
-          </div>
-        </div>
       </div>
 
       <!-- Čísla -->
@@ -434,6 +388,7 @@ adminPanel.innerHTML = `
       <button class="admin-tab" data-tab="custom">Přidat produkt</button>
       <button class="admin-tab" data-tab="current">Produkty</button>
       <button class="admin-tab" data-tab="categories">Kategorie</button>
+      <button class="admin-tab" data-tab="story">Příběh</button>
       <button class="admin-tab" data-tab="hours">Hodiny</button>
     </div>
 
@@ -519,6 +474,47 @@ adminPanel.innerHTML = `
         <p class="quick-add-status" id="category-form-status"></p>
       </form>
       <div class="admin-categories-list" id="admin-categories-list"></div>
+    </div>
+
+    <!-- TAB: Story / timeline -->
+    <div class="admin-tab-content" id="tab-story">
+      <form id="story-form" class="category-form">
+        <input type="hidden" id="story-edit-id" />
+        <div class="flavor-form-row">
+          <div class="form-field form-field--year">
+            <label for="story-year">Rok / štítek</label>
+            <input type="text" id="story-year" placeholder="Např. 2026" required />
+          </div>
+          <div class="form-field form-field--grow">
+            <label for="story-style">Vzhled</label>
+            <select id="story-style">
+              <option value="normal">Běžný</option>
+              <option value="highlight">Zvýrazněný (červený)</option>
+              <option value="winter">Zima ❄️ (modrý)</option>
+              <option value="future">Budoucnost (čárkovaný)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-field story-field">
+          <label for="story-title">Nadpis</label>
+          <input type="text" id="story-title" placeholder="Např. Startuje Winter Edition" required />
+        </div>
+        <div class="form-field story-field">
+          <label for="story-text">Text</label>
+          <textarea id="story-text" rows="4" placeholder="Co se stalo…" required></textarea>
+        </div>
+        <div class="form-field story-field">
+          <label for="story-quote">Citát (nepovinné)</label>
+          <input type="text" id="story-quote" placeholder="„…“ — Jiří" />
+        </div>
+        <p class="admin-hint">Tučně napíšete takto: **WINTER EDITION**</p>
+        <div class="category-form-actions story-form-actions">
+          <button type="button" class="btn btn--outline btn--small" id="story-cancel-btn" hidden>Zrušit</button>
+          <button type="submit" class="btn btn--primary btn--small" id="story-submit-btn">Přidat do příběhu</button>
+        </div>
+        <p class="quick-add-status" id="story-form-status"></p>
+      </form>
+      <div class="admin-categories-list" id="admin-story-list"></div>
     </div>
 
     <!-- TAB: Hours -->
@@ -1301,6 +1297,182 @@ saveHoursBtn.addEventListener('click', async () => {
 
 // Stav Otevřeno/Zavřeno přepočítat každou minutu
 setInterval(renderHours, 60000)
+
+// ============ ČASOVÁ OSA (Firestore) ============
+const timelineEl = document.getElementById('timeline')
+const storyForm = document.getElementById('story-form')
+const storyEditId = document.getElementById('story-edit-id')
+const storyYear = document.getElementById('story-year')
+const storyStyle = document.getElementById('story-style')
+const storyTitle = document.getElementById('story-title')
+const storyText = document.getElementById('story-text')
+const storyQuote = document.getElementById('story-quote')
+const storySubmitBtn = document.getElementById('story-submit-btn')
+const storyCancelBtn = document.getElementById('story-cancel-btn')
+const storyStatus = document.getElementById('story-form-status')
+const adminStoryList = document.getElementById('admin-story-list')
+
+const DEFAULT_TIMELINE = [
+  { id: 't2016', order: 1, style: 'normal', year: '2016', title: 'Kde to všechno začalo', text: 'Jiří založil NA ZMRZKU s jedinou vizí — dělat poctivou zmrzlinu, která potěší. Z malého stánku v Hradci Králové se zrodil příběh, který trvá dodnes.' },
+  { id: 't2019', order: 2, style: 'normal', year: '2019', title: 'Ocenění a média', text: 'Naše pistáciová zmrzlina se dostala mezi nejlepší v ČR. Reportáže na Prima CNN ukázaly celému Česku, jak u nás zmrzlinu děláme.' },
+  { id: 't2022', order: 3, style: 'normal', year: '2022', title: 'Dvě provozovny v Hradci', text: 'Otevíráme druhou pobočku U Dvora. Hradec Králové má konečně svoji zmrzlinárnu na dvou místech — a Hradečáci si ji zamilovali.' },
+  { id: 't2026', order: 4, style: 'highlight', year: '2026', title: 'Předání žezla', text: '**Jiřin a Nikouš** přebírají zmrzlinové království. Receptury zůstávají, kvalita zůstává — jen přicházejí nové nápady a energie.', quote: '„První sezónu budu vše sledovat z povzdálí." — Jiří' },
+  { id: 't2026winter', order: 5, style: 'winter', year: 'Zima 2026', title: '❄️ Kdo říkal, že zmrzlinová sezóna končí s podzimem? ❄️', text: 'Máme pro vás obrovskou novinku! Ani v chladných měsících vás nenecháme na holičkách. V Kopečku oficiálně startuje naše zbrusu nová **WINTER EDITION**! 🍨✨' },
+  { id: 't2026plus', order: 6, style: 'future', year: '2026+', title: 'Příběh pokračuje', text: 'Hradec má svoji zmrzlinárnu. S novou energií a odhodláním píšeme další kapitoly příběhu NA ZMRZKU. Přijďte je ochutnat.' },
+]
+
+let timeline = DEFAULT_TIMELINE
+let timelineInDb = false
+
+// Escapovaný text + **tučně**
+const richText = (t) => esc(t).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/NA ZMRZKU/g, 'NA&nbsp;ZMRZKU')
+
+function renderTimeline() {
+  timelineEl.innerHTML = '<div class="timeline-line"></div>' + timeline.map((t, i) => `
+    <div class="timeline-item timeline-item--${i % 2 ? 'right' : 'left'} timeline-item--${esc(t.style || 'normal')}">
+      <div class="timeline-dot${t.style && t.style !== 'normal' ? ` timeline-dot--${esc(t.style)}` : ''}"></div>
+      <div class="timeline-content">
+        <span class="timeline-year">${esc(t.year)}</span>
+        <h3 class="timeline-title">${richText(t.title)}</h3>
+        <p class="timeline-text">${richText(t.text)}</p>
+        ${t.quote ? `<p class="timeline-quote">${esc(t.quote)}</p>` : ''}
+      </div>
+    </div>
+  `).join('')
+}
+
+const STYLE_LABELS = { normal: 'Běžný', highlight: 'Zvýrazněný', winter: 'Zima ❄️', future: 'Budoucnost' }
+
+function renderAdminStory() {
+  adminStoryList.innerHTML = `
+    <h4 class="admin-group-title">Události na webu (v tomto pořadí)</h4>
+    ${timeline.map((t, i) => `
+      <div class="admin-cat-item admin-story-item admin-story-item--${esc(t.style || 'normal')}">
+        <span class="admin-story-year">${esc(t.year)}</span>
+        <div class="admin-cat-info">
+          <span class="admin-cat-name">${esc(t.title)}</span>
+          <span class="admin-cat-meta">${STYLE_LABELS[t.style] || 'Běžný'}</span>
+        </div>
+        <div class="admin-cat-order">
+          <button type="button" data-story="${t.id}" data-action="up" ${i === 0 ? 'disabled' : ''} aria-label="Posunout nahoru">▲</button>
+          <button type="button" data-story="${t.id}" data-action="down" ${i === timeline.length - 1 ? 'disabled' : ''} aria-label="Posunout dolů">▼</button>
+        </div>
+        <div class="admin-flavor-actions">
+          <button type="button" data-story="${t.id}" data-action="edit" class="admin-btn-edit">Upravit</button>
+          <button type="button" data-story="${t.id}" data-action="delete" class="admin-btn-delete">Smazat</button>
+        </div>
+      </div>
+    `).join('')}
+  `
+}
+
+// Dokud časová osa v databázi není, ukazuje se výchozí - před první změnou ji uložíme
+async function ensureTimelineInDb() {
+  if (timelineInDb) return
+  for (const { id, ...data } of DEFAULT_TIMELINE) {
+    await setDoc(doc(db, 'timeline', id), data)
+  }
+  timelineInDb = true
+}
+
+function resetStoryForm() {
+  storyForm.reset()
+  storyEditId.value = ''
+  storySubmitBtn.textContent = 'Přidat do příběhu'
+  storyCancelBtn.hidden = true
+}
+storyCancelBtn.addEventListener('click', resetStoryForm)
+
+storyForm.addEventListener('submit', async (e) => {
+  e.preventDefault()
+  const data = {
+    year: storyYear.value.trim(),
+    style: storyStyle.value,
+    title: storyTitle.value.trim(),
+    text: storyText.value.trim(),
+    quote: storyQuote.value.trim(),
+  }
+  if (!data.year || !data.title || !data.text) return
+
+  storySubmitBtn.disabled = true
+  try {
+    await ensureTimelineInDb()
+    if (storyEditId.value) {
+      await updateDoc(doc(db, 'timeline', storyEditId.value), data)
+      showStatus(storyStatus, 'Událost uložena', true)
+    } else {
+      const maxOrder = Math.max(0, ...timeline.map(t => t.order || 0))
+      await addDoc(collection(db, 'timeline'), { ...data, order: maxOrder + 1 })
+      showStatus(storyStatus, 'Přidáno na konec příběhu – šipkami ji můžete posunout', true)
+    }
+    resetStoryForm()
+  } catch (err) {
+    showStatus(storyStatus, saveErrorText(err), false)
+  }
+  storySubmitBtn.disabled = false
+})
+
+async function moveStory(id, dir) {
+  const i = timeline.findIndex(t => t.id === id)
+  if (!timeline[i + dir]) return
+  try {
+    await ensureTimelineInDb()
+    const reordered = [...timeline]
+    ;[reordered[i], reordered[i + dir]] = [reordered[i + dir], reordered[i]]
+    for (const [idx, t] of reordered.entries()) {
+      if (t.order !== idx + 1) await updateDoc(doc(db, 'timeline', t.id), { order: idx + 1 })
+    }
+  } catch (err) {
+    showStatus(storyStatus, saveErrorText(err), false)
+  }
+}
+
+async function deleteStory(id) {
+  const t = timeline.find(x => x.id === id)
+  if (!confirm(`Opravdu smazat událost „${t.title}“?`)) return
+  try {
+    await ensureTimelineInDb()
+    await deleteDoc(doc(db, 'timeline', id))
+  } catch (err) {
+    showStatus(storyStatus, saveErrorText(err), false)
+  }
+}
+
+function startStoryEdit(id) {
+  const t = timeline.find(x => x.id === id)
+  storyEditId.value = id
+  storyYear.value = t.year
+  storyStyle.value = t.style || 'normal'
+  storyTitle.value = t.title
+  storyText.value = t.text
+  storyQuote.value = t.quote || ''
+  storySubmitBtn.textContent = 'Uložit událost'
+  storyCancelBtn.hidden = false
+  storyForm.scrollIntoView({ block: 'start', behavior: 'smooth' })
+  storyTitle.focus()
+}
+
+adminStoryList.addEventListener('click', (e) => {
+  const btn = e.target.closest('button[data-story]')
+  if (!btn) return
+  const { story, action } = btn.dataset
+  if (action === 'up') moveStory(story, -1)
+  else if (action === 'down') moveStory(story, 1)
+  else if (action === 'edit') startStoryEdit(story)
+  else if (action === 'delete') deleteStory(story)
+})
+
+onSnapshot(collection(db, 'timeline'), (snapshot) => {
+  timelineInDb = !snapshot.empty
+  timeline = timelineInDb
+    ? snapshot.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+    : DEFAULT_TIMELINE
+  renderTimeline()
+  renderAdminStory()
+})
+
+renderTimeline()
+renderAdminStory()
 
 // Animované lentičky / sprinkles - barevné jako Smarties
 const sprinkleColors = [
