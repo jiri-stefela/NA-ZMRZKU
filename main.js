@@ -96,7 +96,7 @@ document.querySelector('#app').innerHTML = `
             <span class="loc-card-badge">2 točené + 4 gelata</span>
           </div>
           <div class="loc-card-info">
-            <div class="loc-card-row">${svg.pin} <span>V Kopečku 163, 500 02 Hradec Králové – Třebeš</span></div>
+            <div class="loc-card-row">${svg.pin} <span>V Kopečku 163, 500 02 Hradec Králové</span></div>
             <div class="loc-card-row">${svg.clock} <span id="hours-kopecku">Po–Ne: 11:00–18:00</span></div>
           </div>
           <div class="loc-card-rating">
