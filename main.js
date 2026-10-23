@@ -103,14 +103,8 @@ document.querySelector('#app').innerHTML = `
             <span class="rating-stars">4,6</span>
             <span class="rating-count">188 recenzí</span>
           </div>
-          <div class="loc-card-flavors" id="flavors-kopecku">
-            <div class="flavors-loading">Načítám příchutě…</div>
-          </div>
-          <div class="loc-card-triste">
-            <h4 class="loc-card-triste-title">🧊 Ledové tříště</h4>
-            <div class="loc-card-triste-list" id="triste-kopecku">
-              <div class="flavors-loading">Načítám…</div>
-            </div>
+          <div class="loc-card-menu" id="menu-kopecku">
+            <div class="flavors-loading">Načítám nabídku…</div>
           </div>
           <div class="loc-card-actions">
             <a href="https://maps.app.goo.gl/We5ZpddgCA5yF5YA7" target="_blank" rel="noopener noreferrer" class="contact-link">Navigovat</a>
@@ -429,31 +423,24 @@ adminPanel.innerHTML = `
   <div class="modal modal--admin">
     <button class="modal-close" id="admin-close">&times;</button>
     <div class="modal-header">
-      <h2 class="modal-title">Správa příchutí</h2>
+      <h2 class="modal-title">Správa nabídky</h2>
       <p class="modal-subtitle" id="admin-user-email"></p>
     </div>
 
     <!-- ADMIN TABS -->
     <div class="admin-tabs">
       <button class="admin-tab admin-tab--active" data-tab="quick">Rychlé přidání</button>
-      <button class="admin-tab" data-tab="custom">Vlastní příchuť</button>
-      <button class="admin-tab" data-tab="current">Aktuální příchutě</button>
+      <button class="admin-tab" data-tab="custom">Přidat produkt</button>
+      <button class="admin-tab" data-tab="current">Produkty</button>
+      <button class="admin-tab" data-tab="categories">Kategorie</button>
       <button class="admin-tab" data-tab="hours">Hodiny</button>
     </div>
 
     <!-- TAB: Quick Add -->
     <div class="admin-tab-content admin-tab-content--active" id="tab-quick">
       <div class="quick-add-controls">
-        <input type="text" id="quick-search" placeholder="Hledat příchuť…" class="quick-search-input" />
         <div class="quick-add-row">
-          <div class="form-field">
-            <label for="quick-location">Provozovna</label>
-            <select id="quick-location">
-              <option value="kopecku">V Kopečku</option>
-              <option value="special">Specialita</option>
-              <option value="triste-kopecku">Tříště – V Kopečku</option>
-            </select>
-          </div>
+          <input type="text" id="quick-search" placeholder="Hledat příchuť…" class="quick-search-input" />
           <button type="button" class="btn btn--primary btn--small" id="quick-add-btn">Přidat vybrané <span id="quick-add-count"></span></button>
         </div>
       </div>
@@ -467,29 +454,17 @@ adminPanel.innerHTML = `
         <input type="hidden" id="flavor-edit-id" />
         <div class="flavor-form-row">
           <div class="form-field form-field--grow">
-            <label for="flavor-name">Název příchutě</label>
-            <input type="text" id="flavor-name" placeholder="Např. Pistáciová" required />
+            <label for="flavor-name">Název produktu</label>
+            <input type="text" id="flavor-name" placeholder="Např. Pistáciová, Horká čokoláda…" required />
           </div>
           <div class="form-field">
-            <label for="flavor-type">Typ</label>
-            <select id="flavor-type">
-              <option value="tocena">Točená</option>
-              <option value="gelato">Gelato</option>
-              <option value="sorbet">Sorbet</option>
-              <option value="triste">Ledová tříšť</option>
-              <option value="special">Specialita</option>
-            </select>
-          </div>
-          <div class="form-field">
-            <label for="flavor-location">Provozovna</label>
-            <select id="flavor-location">
-              <option value="kopecku">V Kopečku</option>
-              <option value="special">Specialita</option>
-              <option value="triste-kopecku">Tříště – V Kopečku</option>
-            </select>
+            <label for="flavor-type">Kategorie</label>
+            <select id="flavor-type"></select>
           </div>
           <button type="submit" class="btn btn--primary btn--small" id="flavor-submit-btn">Přidat</button>
+          <button type="button" class="btn btn--outline btn--small" id="flavor-cancel-btn" hidden>Zrušit</button>
         </div>
+        <p class="admin-hint">Novou kategorii (např. Teplé potěšení) založíte v záložce Kategorie.</p>
         <p class="quick-add-status" id="flavor-form-status"></p>
       </form>
     </div>
@@ -500,6 +475,49 @@ adminPanel.innerHTML = `
         <button type="button" class="btn btn--outline btn--small btn--danger" id="clear-all-flavors-btn">Smazat vše</button>
       </div>
       <div class="admin-flavors-list" id="admin-flavors-list"></div>
+    </div>
+
+    <!-- TAB: Categories -->
+    <div class="admin-tab-content" id="tab-categories">
+      <form id="category-form" class="category-form">
+        <input type="hidden" id="category-edit-id" />
+        <div class="flavor-form-row">
+          <div class="form-field form-field--icon">
+            <label for="category-icon">Ikona</label>
+            <input type="text" id="category-icon" maxlength="8" />
+          </div>
+          <div class="form-field form-field--grow">
+            <label for="category-name">Název kategorie</label>
+            <input type="text" id="category-name" placeholder="Např. Teplé potěšení" required />
+          </div>
+          <div class="form-field form-field--color">
+            <label for="category-color">Barva</label>
+            <input type="color" id="category-color" />
+          </div>
+        </div>
+        <div class="category-pickers">
+          <div class="emoji-picker" id="emoji-picker"></div>
+          <div class="color-picker" id="color-picker"></div>
+        </div>
+        <div class="category-form-footer">
+          <div class="category-preview-wrap">
+            <span class="category-preview-label">Náhled na webu</span>
+            <div class="menu-cat category-preview" id="category-preview">
+              <div class="menu-cat-head">
+                <span class="menu-cat-icon"></span>
+                <span class="menu-cat-name"></span>
+                <span class="menu-cat-count">3</span>
+              </div>
+            </div>
+          </div>
+          <div class="category-form-actions">
+            <button type="button" class="btn btn--outline btn--small" id="category-cancel-btn" hidden>Zrušit</button>
+            <button type="submit" class="btn btn--primary btn--small" id="category-submit-btn">Přidat kategorii</button>
+          </div>
+        </div>
+        <p class="quick-add-status" id="category-form-status"></p>
+      </form>
+      <div class="admin-categories-list" id="admin-categories-list"></div>
     </div>
 
     <!-- TAB: Hours -->
@@ -614,19 +632,62 @@ onAuthStateChanged(auth, (user) => {
   }
 })
 
-// ============ FLAVORS CRUD ============
+// ============ KATEGORIE + PRODUKTY ============
 const flavorForm = document.getElementById('flavor-form')
 const flavorEditId = document.getElementById('flavor-edit-id')
 const flavorNameInput = document.getElementById('flavor-name')
 const flavorTypeInput = document.getElementById('flavor-type')
-const flavorLocationInput = document.getElementById('flavor-location')
 const flavorSubmitBtn = document.getElementById('flavor-submit-btn')
+const flavorCancelBtn = document.getElementById('flavor-cancel-btn')
 const adminFlavorsList = document.getElementById('admin-flavors-list')
-const flavorsKopecku = document.getElementById('flavors-kopecku')
+const menuKopecku = document.getElementById('menu-kopecku')
 const specialsGrid = document.getElementById('specials-grid')
 
-const typeLabels = { tocena: 'Točená', gelato: 'Gelato', sorbet: 'Sorbet', special: 'Specialita', triste: 'Ledová tříšť' }
-const typeColors = { tocena: '#E03B3B', gelato: '#e87942', sorbet: '#f59e0b', special: '#8b5cf6', triste: '#3498db' }
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
+
+// Výchozí kategorie - id odpovídají starému poli "type" u příchutí
+const DEFAULT_CATEGORIES = [
+  { id: 'gelato', name: 'Gelato', icon: '🍨', color: '#e87942', order: 1 },
+  { id: 'tocena', name: 'Točená zmrzlina', icon: '🍦', color: '#E03B3B', order: 2 },
+  { id: 'triste', name: 'Ledová tříšť', icon: '🧊', color: '#3498db', order: 3 },
+  { id: 'sorbet', name: 'Sorbet', icon: '🍧', color: '#f59e0b', order: 4 },
+  { id: 'special', name: 'Speciality', icon: '🍨', color: '#8b5cf6', order: 99 },
+]
+const EMOJI_PRESETS = ['🍦', '🍨', '🍧', '🧊', '☕', '🍫', '🧁', '🍰', '🍪', '🥤', '🥛', '🍓', '🥭', '🫐', '🍋', '🍒', '🧇', '🥞', '🍯', '🔥', '⭐', '🎉']
+const COLOR_PRESETS = ['#E03B3B', '#e87942', '#f59e0b', '#16a34a', '#0d9488', '#3498db', '#6366f1', '#8b5cf6', '#ec4899', '#92400e', '#475569']
+
+let categories = DEFAULT_CATEGORIES
+let categoriesInDb = false
+
+const catById = (id) => categories.find(c => c.id === id)
+const catColor = (id) => catById(id)?.color || '#999'
+
+// Starší záznamy mají kategorii schovanou v poli location
+function categoryOf(f) {
+  if (f.location === 'special') return 'special'
+  if (f.location === 'dvora' || f.location === 'triste-dvora') return '' // zrušená pobočka
+  if (f.location === 'triste-kopecku' && f.type !== 'special') return 'triste'
+  return f.type
+}
+
+function productCount(n) {
+  return `${n} ${n === 1 ? 'produkt' : n >= 2 && n <= 4 ? 'produkty' : 'produktů'}`
+}
+
+function saveErrorText(err) {
+  console.error(err)
+  return err?.code === 'permission-denied'
+    ? 'Neuloženo – nejste přihlášeni. Odhlaste se a přihlaste znovu.'
+    : 'Neuloženo – zkontrolujte připojení a zkuste to znovu.'
+}
+
+function showStatus(el, text, ok, ms = 4000) {
+  el.textContent = text
+  el.className = `quick-add-status ${ok ? 'quick-add-status--success' : 'quick-add-status--error'}`
+  el.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+  clearTimeout(el._t)
+  el._t = setTimeout(() => { el.textContent = ''; el.className = 'quick-add-status' }, ms)
+}
 
 // ============ PREDEFINED FLAVORS ============
 const PREDEFINED_FLAVORS = [
@@ -722,21 +783,17 @@ function renderQuickAddPanel() {
   const container = document.getElementById('quick-flavors-grid')
   if (!container) return
 
-  const groups = [
-    { key: 'gelato', label: 'Gelato' },
-    { key: 'tocena', label: 'Točená' },
-    { key: 'triste', label: 'Ledové tříště' },
-  ]
+  const groups = ['gelato', 'tocena', 'triste'].map(catById).filter(Boolean)
 
   container.innerHTML = groups.map(g => {
-    const items = PREDEFINED_FLAVORS.filter(f => f.type === g.key && f.name.toLowerCase().includes(searchVal))
+    const items = PREDEFINED_FLAVORS.filter(f => f.type === g.id && f.name.toLowerCase().includes(searchVal))
     if (items.length === 0) return ''
     return `
-      <div class="quick-group-label">${g.label} (${items.length})</div>
+      <div class="quick-group-label" style="color: ${g.color}">${esc(g.icon)} ${esc(g.name)} (${items.length})</div>
       ${items.map(f => `
         <button type="button" class="quick-chip ${selectedQuickFlavors.has(f.name + '|' + f.type) ? 'quick-chip--selected' : ''}"
           data-name="${f.name}" data-type="${f.type}"
-          style="--chip-color: ${typeColors[f.type]}">
+          style="--chip-color: ${g.color}">
           ${f.name}
         </button>
       `).join('')}
@@ -766,12 +823,9 @@ function updateQuickAddCount() {
 }
 
 async function quickAddFlavors() {
-  const location = document.getElementById('quick-location').value
   const statusEl = document.getElementById('quick-add-status')
   if (selectedQuickFlavors.size === 0) {
-    statusEl.textContent = 'Vyberte alespoň jednu příchuť'
-    statusEl.className = 'quick-add-status quick-add-status--error'
-    setTimeout(() => { statusEl.textContent = ''; statusEl.className = 'quick-add-status' }, 2000)
+    showStatus(statusEl, 'Vyberte alespoň jednu příchuť', false, 2000)
     return
   }
 
@@ -781,67 +835,58 @@ async function quickAddFlavors() {
   try {
     for (const key of selectedQuickFlavors) {
       const [name, type] = key.split('|')
-      await addDoc(collection(db, 'flavors'), { name, type, location, createdAt: new Date() })
+      await addDoc(collection(db, 'flavors'), { name, type, location: 'kopecku', createdAt: new Date() })
     }
   } catch (err) {
-    statusEl.textContent = saveErrorText(err)
-    statusEl.className = 'quick-add-status quick-add-status--error'
+    showStatus(statusEl, saveErrorText(err), false)
     return
   }
 
-  statusEl.textContent = `Přidáno ${selectedQuickFlavors.size} příchutí!`
-  statusEl.className = 'quick-add-status quick-add-status--success'
+  showStatus(statusEl, `Přidáno ${selectedQuickFlavors.size} příchutí!`, true, 2500)
   selectedQuickFlavors.clear()
   renderQuickAddPanel()
   updateQuickAddCount()
-  setTimeout(() => { statusEl.textContent = ''; statusEl.className = 'quick-add-status' }, 2500)
 }
 
-// Typ "Specialita" a provozovna "Specialita" patří k sobě
-flavorTypeInput.addEventListener('change', () => {
-  if (flavorTypeInput.value === 'special') flavorLocationInput.value = 'special'
-  else if (flavorLocationInput.value === 'special') flavorLocationInput.value = 'kopecku'
-})
-flavorLocationInput.addEventListener('change', () => {
-  if (flavorLocationInput.value === 'special') flavorTypeInput.value = 'special'
-  else if (flavorTypeInput.value === 'special') flavorTypeInput.value = 'tocena'
-})
-
-function saveErrorText(err) {
-  console.error(err)
-  return err?.code === 'permission-denied'
-    ? 'Neuloženo – nejste přihlášeni. Odhlaste se a přihlaste znovu.'
-    : 'Neuloženo – zkontrolujte připojení a zkuste to znovu.'
+// ---------- Produkty ----------
+function renderCategoryOptions() {
+  const current = flavorTypeInput.value
+  flavorTypeInput.innerHTML = categories.map(c => `<option value="${esc(c.id)}">${esc(c.icon)} ${esc(c.name)}</option>`).join('')
+  if (catById(current)) flavorTypeInput.value = current
 }
+
+function resetFlavorForm() {
+  flavorEditId.value = ''
+  flavorNameInput.value = ''
+  flavorSubmitBtn.textContent = 'Přidat'
+  flavorCancelBtn.hidden = true
+}
+
+flavorCancelBtn.addEventListener('click', resetFlavorForm)
 
 flavorForm.addEventListener('submit', async (e) => {
   e.preventDefault()
   const name = flavorNameInput.value.trim()
   const type = flavorTypeInput.value
-  const location = flavorLocationInput.value
   const statusEl = document.getElementById('flavor-form-status')
-  if (!name) return
+  if (!name || !type) return
 
   flavorSubmitBtn.disabled = true
   try {
     if (flavorEditId.value) {
-      await updateDoc(doc(db, 'flavors', flavorEditId.value), { name, type, location })
-      flavorEditId.value = ''
-      flavorSubmitBtn.textContent = 'Přidat'
+      await updateDoc(doc(db, 'flavors', flavorEditId.value), { name, type, location: 'kopecku' })
     } else {
-      await addDoc(collection(db, 'flavors'), { name, type, location, createdAt: new Date() })
+      await addDoc(collection(db, 'flavors'), { name, type, location: 'kopecku', createdAt: new Date() })
     }
-    flavorNameInput.value = ''
-    statusEl.textContent = type === 'special' || location === 'special'
+    resetFlavorForm()
+    const cat = catById(type)
+    showStatus(statusEl, type === 'special'
       ? `Uloženo – „${name}“ je na webu v sekci Naše speciality`
-      : `Uloženo – „${name}“`
-    statusEl.className = 'quick-add-status quick-add-status--success'
+      : `Uloženo – „${name}“ je na webu v kategorii ${cat?.name || ''}`, true)
   } catch (err) {
-    statusEl.textContent = saveErrorText(err)
-    statusEl.className = 'quick-add-status quick-add-status--error'
+    showStatus(statusEl, saveErrorText(err), false)
   }
   flavorSubmitBtn.disabled = false
-  setTimeout(() => { statusEl.textContent = ''; statusEl.className = 'quick-add-status' }, 4000)
 })
 
 function startEdit(id) {
@@ -849,134 +894,300 @@ function startEdit(id) {
   if (!f) return
   flavorEditId.value = id
   flavorNameInput.value = f.name
-  flavorTypeInput.value = f.type
-  // Zrušené provozovny (U Dvora) se při úpravě přesunou na V Kopečku
-  flavorLocationInput.value = f.location === 'triste-dvora' ? 'triste-kopecku'
-    : ['kopecku', 'special', 'triste-kopecku'].includes(f.location) ? f.location : 'kopecku'
-  if (f.type === 'special') flavorLocationInput.value = 'special'
-  document.querySelector('.admin-tab[data-tab="custom"]').click()
+  flavorTypeInput.value = catById(categoryOf(f)) ? categoryOf(f) : categories[0].id
   flavorSubmitBtn.textContent = 'Uložit'
+  flavorCancelBtn.hidden = false
+  document.querySelector('.admin-tab[data-tab="custom"]').click()
   flavorNameInput.focus()
 }
 
 async function deleteFlavor(id) {
-  if (confirm('Opravdu smazat tuto příchuť?')) {
+  if (confirm('Opravdu smazat tento produkt?')) {
     await deleteDoc(doc(db, 'flavors', id))
   }
 }
 
 adminFlavorsList.addEventListener('click', (e) => {
-  const btn = e.target.closest('[data-edit], [data-delete]')
+  const btn = e.target.closest('[data-edit], [data-delete], [data-add-to]')
   if (!btn) return
   if (btn.dataset.edit) startEdit(btn.dataset.edit)
-  else deleteFlavor(btn.dataset.delete)
+  else if (btn.dataset.delete) deleteFlavor(btn.dataset.delete)
+  else {
+    resetFlavorForm()
+    flavorTypeInput.value = btn.dataset.addTo
+    document.querySelector('.admin-tab[data-tab="custom"]').click()
+    flavorNameInput.focus()
+  }
 })
 
-const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
+// ---------- Kategorie ----------
+const categoryForm = document.getElementById('category-form')
+const categoryEditId = document.getElementById('category-edit-id')
+const categoryNameInput = document.getElementById('category-name')
+const categoryIconInput = document.getElementById('category-icon')
+const categoryColorInput = document.getElementById('category-color')
+const categorySubmitBtn = document.getElementById('category-submit-btn')
+const categoryCancelBtn = document.getElementById('category-cancel-btn')
+const categoryStatus = document.getElementById('category-form-status')
+const categoryPreview = document.getElementById('category-preview')
+const adminCategoriesList = document.getElementById('admin-categories-list')
 
-function renderFlavorChips(flavors) {
-  if (flavors.length === 0) return '<div class="flavors-empty-box"><span class="flavors-empty-icon">🍦</span><p class="flavors-empty">Příchutě brzy doplníme</p></div>'
-  const groups = [
-    { key: 'gelato', label: 'Gelato', icon: '🍨', count: 0 },
-    { key: 'tocena', label: 'Točená zmrzlina', icon: '🍦', count: 0 },
-    { key: 'sorbet', label: 'Sorbet', icon: '🍧', count: 0 },
-  ]
-  let html = ''
-  for (const g of groups) {
-    const items = flavors.filter(f => f.type === g.key)
-    if (items.length === 0) continue
-    html += `<div class="flavor-group">
-      <div class="flavor-group-header">
-        <span class="flavor-group-label" style="--group-color: ${typeColors[g.key]}">${g.icon} ${g.label}</span>
-        <span class="flavor-group-count">${items.length} příchut${items.length === 1 ? 'ě' : items.length < 5 ? 'ě' : 'í'}</span>
-      </div>
-      <div class="flavor-group-chips">${items.map(f => `
-        <div class="flavor-chip" style="--chip-color: ${typeColors[f.type]}">
-          <span class="flavor-chip-dot"></span>
-          <span class="flavor-chip-name">${esc(f.name)}</span>
-        </div>`).join('')}
-      </div>
-    </div>`
-  }
-  return html
+document.getElementById('emoji-picker').innerHTML = EMOJI_PRESETS.map(e => `<button type="button" class="emoji-btn" data-emoji="${e}">${e}</button>`).join('')
+document.getElementById('color-picker').innerHTML = COLOR_PRESETS.map(c => `<button type="button" class="color-swatch" data-color="${c}" style="--swatch: ${c}" aria-label="Barva ${c}"></button>`).join('')
+
+function updateCategoryPreview() {
+  const color = categoryColorInput.value
+  categoryPreview.style.setProperty('--cat-color', color)
+  categoryPreview.querySelector('.menu-cat-icon').textContent = categoryIconInput.value || '🍦'
+  categoryPreview.querySelector('.menu-cat-name').textContent = categoryNameInput.value.trim() || 'Název kategorie'
+  document.querySelectorAll('.emoji-btn').forEach(b => b.classList.toggle('emoji-btn--active', b.dataset.emoji === categoryIconInput.value))
+  document.querySelectorAll('.color-swatch').forEach(b => b.classList.toggle('color-swatch--active', b.dataset.color.toLowerCase() === color.toLowerCase()))
 }
 
-function renderTristeChips(flavors, containerEl) {
-  const parentSection = containerEl?.closest('.loc-card-triste')
-  if (flavors.length === 0) {
-    if (parentSection) parentSection.style.display = 'none'
-    return ''
+document.getElementById('emoji-picker').addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-emoji]')
+  if (!btn) return
+  categoryIconInput.value = btn.dataset.emoji
+  updateCategoryPreview()
+})
+document.getElementById('color-picker').addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-color]')
+  if (!btn) return
+  categoryColorInput.value = btn.dataset.color
+  updateCategoryPreview()
+})
+;[categoryNameInput, categoryIconInput, categoryColorInput].forEach(el => el.addEventListener('input', updateCategoryPreview))
+
+function resetCategoryForm() {
+  categoryEditId.value = ''
+  categoryNameInput.value = ''
+  categoryIconInput.value = '🍦'
+  categoryColorInput.value = '#E03B3B'
+  categorySubmitBtn.textContent = 'Přidat kategorii'
+  categoryCancelBtn.hidden = true
+  updateCategoryPreview()
+}
+categoryCancelBtn.addEventListener('click', resetCategoryForm)
+
+// Dokud kategorie v databázi nejsou, ukazují se výchozí - před první změnou je uložíme
+async function ensureCategoriesInDb() {
+  if (categoriesInDb) return
+  for (const { id, ...data } of DEFAULT_CATEGORIES) {
+    await setDoc(doc(db, 'categories', id), data)
   }
-  if (parentSection) parentSection.style.display = ''
-  return flavors.map(f => `
-    <div class="flavor-chip flavor-chip--triste" style="--chip-color: ${typeColors.triste}">
-      <span class="flavor-chip-dot"></span>
-      <span class="flavor-chip-name">${esc(f.name)}</span>
+  categoriesInDb = true
+}
+
+categoryForm.addEventListener('submit', async (e) => {
+  e.preventDefault()
+  const name = categoryNameInput.value.trim()
+  if (!name) return
+  const data = { name, icon: categoryIconInput.value.trim() || '🍦', color: categoryColorInput.value }
+
+  categorySubmitBtn.disabled = true
+  try {
+    await ensureCategoriesInDb()
+    if (categoryEditId.value) {
+      await updateDoc(doc(db, 'categories', categoryEditId.value), data)
+      showStatus(categoryStatus, `Kategorie „${name}“ uložena`, true)
+    } else {
+      const maxOrder = Math.max(0, ...categories.filter(c => c.id !== 'special').map(c => c.order || 0))
+      await addDoc(collection(db, 'categories'), { ...data, order: maxOrder + 1 })
+      showStatus(categoryStatus, `Kategorie „${name}“ přidána – teď do ní přidejte produkty`, true)
+    }
+    resetCategoryForm()
+  } catch (err) {
+    showStatus(categoryStatus, saveErrorText(err), false)
+  }
+  categorySubmitBtn.disabled = false
+})
+
+async function moveCategory(id, dir) {
+  const list = categories.filter(c => c.id !== 'special')
+  const i = list.findIndex(c => c.id === id)
+  const other = list[i + dir]
+  if (!other) return
+  try {
+    await ensureCategoriesInDb()
+    // Pořadí přečíslujeme celé, aby se nepletly stejné hodnoty
+    const reordered = [...list]
+    ;[reordered[i], reordered[i + dir]] = [reordered[i + dir], reordered[i]]
+    for (const [idx, c] of reordered.entries()) {
+      if (c.order !== idx + 1) await updateDoc(doc(db, 'categories', c.id), { order: idx + 1 })
+    }
+  } catch (err) {
+    showStatus(categoryStatus, saveErrorText(err), false)
+  }
+}
+
+async function deleteCategory(id) {
+  const cat = catById(id)
+  const count = allFlavors.filter(f => categoryOf(f) === id).length
+  if (count > 0) {
+    showStatus(categoryStatus, `„${cat.name}“ obsahuje ${productCount(count)} – nejdřív je smažte nebo přesuňte do jiné kategorie.`, false, 6000)
+    return
+  }
+  if (!confirm(`Opravdu smazat kategorii „${cat.name}“?`)) return
+  try {
+    await ensureCategoriesInDb()
+    await deleteDoc(doc(db, 'categories', id))
+  } catch (err) {
+    showStatus(categoryStatus, saveErrorText(err), false)
+  }
+}
+
+function startCategoryEdit(id) {
+  const cat = catById(id)
+  categoryEditId.value = id
+  categoryNameInput.value = cat.name
+  categoryIconInput.value = cat.icon
+  categoryColorInput.value = cat.color
+  categorySubmitBtn.textContent = 'Uložit kategorii'
+  categoryCancelBtn.hidden = false
+  updateCategoryPreview()
+  categoryNameInput.focus()
+}
+
+adminCategoriesList.addEventListener('click', (e) => {
+  const btn = e.target.closest('button[data-cat]')
+  if (!btn) return
+  const { cat, action } = btn.dataset
+  if (action === 'up') moveCategory(cat, -1)
+  else if (action === 'down') moveCategory(cat, 1)
+  else if (action === 'edit') startCategoryEdit(cat)
+  else if (action === 'delete') deleteCategory(cat)
+})
+
+function renderAdminCategories() {
+  const list = categories.filter(c => c.id !== 'special')
+  const special = catById('special')
+  const row = (c, i) => {
+    const count = allFlavors.filter(f => categoryOf(f) === c.id).length
+    const isSpecial = c.id === 'special'
+    return `
+      <div class="admin-cat-item" style="--cat-color: ${c.color}">
+        <span class="admin-cat-icon">${esc(c.icon)}</span>
+        <div class="admin-cat-info">
+          <span class="admin-cat-name">${esc(c.name)}</span>
+          <span class="admin-cat-meta">${productCount(count)}${isSpecial ? ' · na webu jako karty v sekci Naše speciality' : ''}</span>
+        </div>
+        ${isSpecial ? '' : `
+        <div class="admin-cat-order">
+          <button type="button" data-cat="${c.id}" data-action="up" ${i === 0 ? 'disabled' : ''} aria-label="Posunout nahoru">▲</button>
+          <button type="button" data-cat="${c.id}" data-action="down" ${i === list.length - 1 ? 'disabled' : ''} aria-label="Posunout dolů">▼</button>
+        </div>`}
+        <div class="admin-flavor-actions">
+          <button type="button" data-cat="${c.id}" data-action="edit" class="admin-btn-edit">Upravit</button>
+          ${isSpecial ? '' : `<button type="button" data-cat="${c.id}" data-action="delete" class="admin-btn-delete">Smazat</button>`}
+        </div>
+      </div>`
+  }
+  adminCategoriesList.innerHTML = `
+    <h4 class="admin-group-title">Kategorie na webu (v tomto pořadí)</h4>
+    ${list.map(row).join('')}
+    ${special ? row(special, 0) : ''}
+  `
+}
+
+function renderAdminFlavors() {
+  if (allFlavors.length === 0) {
+    adminFlavorsList.innerHTML = '<p class="admin-empty">Zatím žádné produkty. Přidejte první.</p>'
+    return
+  }
+  const grouped = categories.map(c => ({ c, items: allFlavors.filter(f => categoryOf(f) === c.id) }))
+  const orphans = allFlavors.filter(f => !catById(categoryOf(f)))
+  if (orphans.length) grouped.push({ c: { id: '', name: 'Bez kategorie – upravte nebo smažte', icon: '❔', color: '#999' }, items: orphans })
+
+  adminFlavorsList.innerHTML = grouped.map(({ c, items }) => `
+    <div class="admin-group" style="--cat-color: ${c.color}">
+      <div class="admin-group-head">
+        <h4 class="admin-group-title admin-group-title--cat">${esc(c.icon)} ${esc(c.name)} <span class="admin-group-count">${items.length}</span></h4>
+        ${c.id ? `<button type="button" class="admin-group-add" data-add-to="${esc(c.id)}">+ Přidat</button>` : ''}
+      </div>
+      ${items.length === 0 ? '<p class="admin-group-empty">Zatím prázdné – na webu se nezobrazí</p>' : items.map(f => `
+        <div class="admin-flavor-item">
+          <span class="admin-flavor-dot" style="background: ${c.color}"></span>
+          <span class="admin-flavor-name">${esc(f.name)}</span>
+          <div class="admin-flavor-actions">
+            <button type="button" data-edit="${f.id}" class="admin-btn-edit">Upravit</button>
+            <button type="button" data-delete="${f.id}" class="admin-btn-delete">Smazat</button>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('')
+}
+
+// ---------- Veřejný web ----------
+function renderMenu() {
+  // Ve stejném pořadí, v jakém byly přidány
+  const items = [...allFlavors].reverse()
+  const groups = categories
+    .filter(c => c.id !== 'special')
+    .map(c => ({ c, items: items.filter(f => categoryOf(f) === c.id) }))
+    .filter(g => g.items.length > 0)
+
+  if (groups.length === 0) {
+    menuKopecku.innerHTML = '<div class="flavors-empty-box"><span class="flavors-empty-icon">🍦</span><p class="flavors-empty">Příchutě brzy doplníme</p></div>'
+    return
+  }
+  menuKopecku.innerHTML = groups.map(({ c, items }) => `
+    <div class="menu-cat" style="--cat-color: ${c.color}">
+      <div class="menu-cat-head">
+        <span class="menu-cat-icon">${esc(c.icon)}</span>
+        <span class="menu-cat-name">${esc(c.name)}</span>
+        <span class="menu-cat-count">${items.length}</span>
+      </div>
+      <div class="menu-cat-items">${items.map(f => `
+        <span class="menu-item"><span class="menu-item-dot"></span>${esc(f.name)}</span>`).join('')}
+      </div>
     </div>
   `).join('')
 }
 
 // Speciality z adminu - přidají se za pevné karty pohárů
-function renderSpecialCards(specials) {
+function renderSpecialCards() {
+  const cat = catById('special') || DEFAULT_CATEGORIES.find(c => c.id === 'special')
+  const specials = [...allFlavors].reverse().filter(f => categoryOf(f) === 'special')
   specialsGrid.querySelectorAll('.special-card--dynamic').forEach(el => el.remove())
   specialsGrid.insertAdjacentHTML('beforeend', specials.map(f => `
-    <div class="special-card special-card--dynamic" style="--accent: ${typeColors.special}">
-      <span class="special-emoji">🍨</span>
+    <div class="special-card special-card--dynamic" style="--accent: ${cat.color}">
+      <span class="special-emoji">${esc(cat.icon)}</span>
       <span class="special-name">${esc(f.name)}</span>
     </div>
   `).join(''))
 }
 
-// Realtime listener
-const flavorsQuery = query(collection(db, 'flavors'), orderBy('createdAt', 'desc'))
+let flavorsLoaded = false
+function renderAll() {
+  renderCategoryOptions()
+  renderAdminCategories()
+  if (!flavorsLoaded) return
+  renderMenu()
+  renderSpecialCards()
+  renderAdminFlavors()
+}
 
-const tristeKopeckuEl = document.getElementById('triste-kopecku')
-
-onSnapshot(flavorsQuery, (snapshot) => {
-  allFlavorDocs = snapshot.docs.map(d => ({ id: d.id }))
-  const all = snapshot.docs.map(d => ({ id: d.id, ...d.data() }))
-  allFlavors = all
-
-  const specials = all.filter(f => f.location === 'special' || f.type === 'special')
-  const kopecku = all.filter(f => f.location === 'kopecku' && f.type !== 'triste' && f.type !== 'special')
-  const tristeKopecku = all.filter(f => f.type !== 'special' && (f.location === 'triste-kopecku' || (f.type === 'triste' && f.location === 'kopecku')))
-  // Zbytek (zrušená pobočka U Dvora apod.) - jen v adminu, aby šly smazat
-  const zruseno = all.filter(f => !specials.includes(f) && !kopecku.includes(f) && !tristeKopecku.includes(f))
-
-  // Public - per location
-  flavorsKopecku.innerHTML = renderFlavorChips(kopecku)
-  tristeKopeckuEl.innerHTML = renderTristeChips(tristeKopecku, tristeKopeckuEl)
-  renderSpecialCards(specials)
-
-  // Admin list
-  if (all.length === 0) {
-    adminFlavorsList.innerHTML = '<p class="admin-empty">Zatím žádné příchutě. Přidejte první.</p>'
-  } else {
-    const grouped = [
-      { label: 'V Kopečku', items: kopecku },
-      { label: 'Tříště – V Kopečku', items: tristeKopecku },
-      { label: 'Speciality', items: specials },
-      { label: 'Ostatní / U Dvora (zrušeno – smažte)', items: zruseno },
-    ].filter(g => g.items.length > 0)
-
-    adminFlavorsList.innerHTML = grouped.map(g => `
-      <div class="admin-group">
-        <h4 class="admin-group-title">${g.label}</h4>
-        ${g.items.map(f => `
-          <div class="admin-flavor-item">
-            <span class="admin-flavor-dot" style="background: ${typeColors[f.type] || typeColors.tocena}"></span>
-            <span class="admin-flavor-name">${esc(f.name)}</span>
-            <span class="admin-flavor-type">${typeLabels[f.type] || f.type}</span>
-            <div class="admin-flavor-actions">
-              <button type="button" data-edit="${f.id}" class="admin-btn-edit">Upravit</button>
-              <button type="button" data-delete="${f.id}" class="admin-btn-delete">Smazat</button>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-    `).join('')
-  }
+// Realtime listeners
+onSnapshot(collection(db, 'categories'), (snapshot) => {
+  categoriesInDb = !snapshot.empty
+  const fromDb = snapshot.docs.map(d => ({ id: d.id, ...d.data() }))
+  categories = categoriesInDb ? fromDb : DEFAULT_CATEGORIES
+  if (!catById('special')) categories = [...categories, DEFAULT_CATEGORIES.find(c => c.id === 'special')]
+  categories = [...categories].sort((a, b) => (a.order ?? 50) - (b.order ?? 50))
+  renderAll()
+  renderQuickAddPanel()
 })
+
+onSnapshot(query(collection(db, 'flavors'), orderBy('createdAt', 'desc')), (snapshot) => {
+  allFlavorDocs = snapshot.docs.map(d => ({ id: d.id }))
+  allFlavors = snapshot.docs.map(d => ({ id: d.id, ...d.data() }))
+  flavorsLoaded = true
+  renderAll()
+})
+
+resetCategoryForm()
+renderAll()
 
 // ============ OPENING HOURS (Firestore) ============
 const hoursKopeckuEl = document.getElementById('hours-kopecku')
